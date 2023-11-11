@@ -2,6 +2,19 @@
 Python bot game automation
 
 The dependencies are specified on requirements.txt.
+
+To work on code and start the bot, create a virtual environment:
+
+´´´sh
+python -m venv venv
+´´´
+
+Then, activate your virtual environment:
+
+´´´sh
+.\venv\Scripts\activate
+´´´
+
 To install the depencies, go to the project folder and use:
 
 ´´´sh
@@ -12,18 +25,6 @@ That file does not update automatically, so if you chance something (add, update
 
 ´´´sh
 pip freeze > requirements.txt
-´´´
-
-To use the bot, create a virtual environment:
-
-´´´sh
-python -m venv venv
-´´´
-
-Then, activate your virtual environment:
-
-´´´sh
-.\venv\Scripts\activate
 ´´´
 
 them, run the code:
