@@ -66,6 +66,7 @@ def click_location(x, y, template_width, template_height):
 
     # Move back to where the mouse was before click
     pyautogui.moveTo(x, y)
+    pyautogui.moveTo(x, y) # Double check
 
 def main():
     print("bot started!")
