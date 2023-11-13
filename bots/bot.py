@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 import pyautogui
-import time
 import os
+import time
 
 save_path = 'images/screenshots'
 template_path = 'images/bot/countButton.jpg'
