@@ -39,3 +39,22 @@ To end bot, use ´CTRL + C´ and desactivate the virtual environment:
 ```sh
 deactivate
 ```
+
+---
+
+To build the application
+
+Navigate to Your Script's Directory:
+Open the command prompt and navigate to the directory containing your Python script (`bot.py`).
+
+Create the Executable:
+Run the following command to create the executable:
+
+```sh
+pyinstaller --onefile bot.py
+```
+
+This command will create a dist folder in your script's directory, containing the executable file (`bot.exe`).
+
+Find the Executable:
+Navigate to the dist folder, and you'll find your executable (`bot.exe`).

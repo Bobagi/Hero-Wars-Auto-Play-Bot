@@ -3,6 +3,7 @@ import numpy as np
 import pyautogui
 import os
 import time
+from desktopmagic.screengrab_win32 import getRectAsImage, getScreenAsImage
 
 save_path = 'images/screenshots'
 template_path = 'images/bot/countButton.jpg'
@@ -10,7 +11,8 @@ showImgs = False
 
 def capture_screen():
     # Take a screenshot of the entire screen
-    screenshot = pyautogui.screenshot()
+    # screenshot = pyautogui.screenshot()
+    screenshot = getScreenAsImage()
     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)  # Use RGB2BGR for OpenCV
     print("screenshot data: ", screenshot.dtype, screenshot.shape)
 
