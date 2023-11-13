@@ -6,6 +6,8 @@ import os
 
 save_path = 'images/screenshots'
 template_path = 'images/bot/countButton.jpg'
+showImgs = False
+
 def capture_screen():
     # Take a screenshot of the entire screen
     screenshot = pyautogui.screenshot()
@@ -28,30 +30,51 @@ def find_image_on_screen(template_image_path):
     template = cv2.imread(template_image_path)
     print("template img data: ",template.dtype, template.shape)
 
+    if showImgs:
+        cv2.imshow('Screen', screen)
+        cv2.imshow('Template', template)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
     if template is None:
         print("Error: Unable to read the template image.")
         return None
 
     res = cv2.matchTemplate(screen, template, cv2.TM_CCOEFF_NORMED)
+
     threshold = 0.8
     loc = np.where(res >= threshold)
     if loc[0].size > 0:
-        return loc[0][0], loc[1][0]  # Return coordinates of the match
+        # Get the width and height of the template image
+        template_width, template_height = template.shape[1], template.shape[0]
+
+        return loc[0][0], loc[1][0], template.shape[1], template.shape[0]  # Return coordinates of the match
     return None
 
-def click_location(x, y):
+def click_location(x, y, template_width, template_height):
+    # Calculate the center coordinates of the template
+    center_x = x + template_width // 2
+    center_y = y + template_height // 2
+
+    # Save mouse position
+    (x, y) = pyautogui.position()
+
     # Click at the provided x, y coordinates
-    pyautogui.click(x, y)
+    pyautogui.click(center_x, center_y, _pause=False)
+
+    # Move back to where the mouse was before click
+    pyautogui.moveTo(x, y)
 
 def main():
     print("bot started!")
-    time.sleep(5)  # Wait for 5 seconds before starting the bot actions
+    time.sleep(1)  # Wait for 5 seconds before starting the bot actions
     # Your bot logic here
     # For example, to find an image on the screen and click it:
     location = find_image_on_screen(template_path)
     if location:
         print("Image founded.")
-        click_location(location[1], location[0])
+
+        click_location(location[1], location[0], location[2], location[3])
     else:
         print("Image not found on screen.")
 
