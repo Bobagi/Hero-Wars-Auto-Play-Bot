@@ -83,13 +83,10 @@ def click_location(x, y, template_width, template_height):
 def powerUp():
     max_attempts = 3
     attempts = 0
+    return False
 
     while attempts < max_attempts:
-        # PowerUps
-        if TakePowerUp:
-            
-
-
+        
         # Look for battleDoor
         location = find_image_on_screen(door)
         if location:
