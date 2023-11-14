@@ -8,6 +8,7 @@ from desktopmagic.screengrab_win32 import getRectAsImage, getScreenAsImage
 save_path = 'images/screenshots'
 template_path = 'images/bot/countButton.jpg'
 showImgs = False
+saveScreenshots=False
 
 def capture_screen():
     # Take a screenshot of the entire screen
