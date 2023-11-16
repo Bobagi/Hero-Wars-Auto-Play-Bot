@@ -162,3 +162,4 @@ cython_debug/
 images/screenshots/*.*
 images/screenshots/*/*
 roi_image.png
+roi_gray_image.png

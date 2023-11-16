@@ -3,44 +3,22 @@ import numpy as np
 import pyautogui
 import os
 import time
-from desktopmagic.screengrab_win32 import getRectAsImage, getScreenAsImage
 import sys
+from desktopmagic.screengrab_win32 import getRectAsImage, getScreenAsImage
+from collections import OrderedDict
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 save_path = 'images/screenshots'
-
-door = 'images/HeroWars/battleDoor.png'
-arrowRight = 'images/HeroWars/arrowRight.png'
-blueChest = 'images/HeroWars/blueChest.png'
-blueChestReward = 'images/HeroWars/blueChestReward.png'
-continueButton = 'images/HeroWars/continueButton.png'
-energySphere = 'images/HeroWars/energySphere.png'
-energyBase = 'images/HeroWars/energyBase.png'
-exitButton = 'images/HeroWars/exitButton.png'
-skipButton = 'images/HeroWars/skipButton.png'
-
-damage1 = 'images/HeroWars/powerUps/damage1.png'
-damage2 = 'images/HeroWars/powerUps/damage2.png'
-damage3 = 'images/HeroWars/powerUps/damage3.png'
-damage4 = 'images/HeroWars/powerUps/damage4.png'
-armor1 = 'images/HeroWars/powerUps/armor1.png'
-armor2 = 'images/HeroWars/powerUps/armor2.png'
-armor4 = 'images/HeroWars/powerUps/armor4.png'
-magicDefense1 = 'images/HeroWars/powerUps/magicDefense1.png'
-magicDefense3 = 'images/HeroWars/powerUps/magicDefense3.png'
-magicDefense4 = 'images/HeroWars/powerUps/magicDefense4.png'
 
 showImgs = False
 saveScreenshots=False
 
-TakePowerUp = False
-
 def capture_screen():
-    # Take a screenshot of the entire screen
-    # screenshot = pyautogui.screenshot()
     screenshot = getScreenAsImage()
     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)  # Use RGB2BGR for OpenCV
 
-     # Save the screenshot
     if save_path and saveScreenshots:
         if not os.path.exists(save_path):
             os.makedirs(save_path)
@@ -71,9 +49,48 @@ def find_image_on_screen(template_image_path):
     if loc[0].size > 0:
         # Get the width and height of the template image
         template_width, template_height = template.shape[1], template.shape[0]
+        y, x = loc[0][0], loc[1][0]
 
-        return loc[0][0], loc[1][0], template.shape[1], template.shape[0]  # Return coordinates of the match
+        return x, y, template_width, template_height  # Return coordinates of the match
     return None
+
+def find_all_images_on_screen(template_image_path):
+    # Find all occurrences of a particular image on the screen
+    screen = capture_screen()
+    template = cv2.imread(template_image_path)
+
+    if showImgs:
+        cv2.imshow('Screen', screen)
+        cv2.imshow('Template', template)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    if template is None:
+        print("Error: Unable to read the template image.")
+        return None
+
+    matches = []
+
+    threshold = 0.8
+    while True:
+        res = cv2.matchTemplate(screen, template, cv2.TM_CCOEFF_NORMED)
+
+        loc = np.where(res >= threshold)
+        if loc[0].size > 0:
+            # Get the coordinates of the match
+            y, x = loc[0][0], loc[1][0]
+
+            # Get the width and height of the template image
+            template_width, template_height = template.shape[1], template.shape[0]
+
+            matches.append((x, y, template_width, template_height))
+
+            # Update the region around the found match to ignore it in the next iteration
+            screen[y:y + template_height, x:x + template_width] = 0
+        else:
+            break
+
+    return matches
 
 def click_location(x, y, template_width, template_height):
     # Calculate the center coordinates of the template
@@ -90,166 +107,294 @@ def click_location(x, y, template_width, template_height):
     pyautogui.moveTo(x, y)
     pyautogui.moveTo(x, y) # Double check
 
-def powerUp():
+def choose_power_up(power_ups_types, images):
+    desired_order = ['damage', 'armor', 'magicDefense']
+    power_ups_types = OrderedDict((key, power_ups_types[key]) for key in desired_order)
+    # power_ups_types = [damage, armor, magicDefense]
     max_attempts = 3
-    attempts = 0
-    max_powerUps = 3
-    powerUpsTaken = 0
-    while attempts < max_attempts and powerUpsTaken < max_powerUps:
-        
-        location = find_image_on_screen(damage4)
-        if location:
-            print("Upgrade damage IV powerUp choosed.")
-            click_location(location[1], location[0], location[2], location[3])
-            powerUpsTaken += 1
-            continue
-        location = find_image_on_screen(damage3)
-        if location:
-            print("Upgrade damage III powerUp choosed.")
-            click_location(location[1], location[0], location[2], location[3])
-            powerUpsTaken += 1
-            continue
-        location = find_image_on_screen(damage2)
-        if location:
-            print("Upgrade damage II powerUp choosed.")
-            click_location(location[1], location[0], location[2], location[3])
-            powerUpsTaken += 1
-            continue
-        location = find_image_on_screen(damage1)
-        if location:
-            print("Upgrade damage I powerUp choosed.")
-            click_location(location[1], location[0], location[2], location[3])
-            powerUpsTaken += 1
-            continue
+    max_power_ups = 3
+    bought = 0
+    correctionWidth = 20
 
-        location = find_image_on_screen(armor4)
-        if location:
-            print("Upgrade armor IV powerUp choosed.")
-            click_location(location[1], location[0], location[2], location[3])
-            powerUpsTaken += 1
-            continue
-        location = find_image_on_screen(armor2)
-        if location:
-            print("Upgrade armor II powerUp choosed.")
-            click_location(location[1], location[0], location[2], location[3])
-            powerUpsTaken += 1
-            continue
-        location = find_image_on_screen(armor1)
-        if location:
-            print("Upgrade armor I powerUp choosed.")
-            click_location(location[1], location[0], location[2], location[3])
-            powerUpsTaken += 1
-            continue
-        
-        location = find_image_on_screen(magicDefense4)
-        if location:
-            print("Upgrade magic defense IV powerUp choosed.")
-            click_location(location[1], location[0], location[2], location[3])
-            powerUpsTaken += 1
-            continue
-        location = find_image_on_screen(magicDefense3)
-        if location:
-            print("Upgrade magic defense III powerUp choosed.")
-            click_location(location[1], location[0], location[2], location[3])
-            powerUpsTaken += 1
-            continue
-        location = find_image_on_screen(magicDefense1)
-        if location:
-            print("Upgrade magic defense I powerUp choosed.")
-            click_location(location[1], location[0], location[2], location[3])
-            powerUpsTaken += 1
-            continue
+    for power_up in power_ups_types:
+        print(f"Looking for {power_up} power up.")
+        foundedImages = False
+        attempts = 0
+        while attempts < max_attempts and foundedImages == False:
+            locatedImages = find_all_images_on_screen(power_ups_types[power_up])
+            if len(locatedImages) > 0:
+                print("locatedImages: ",locatedImages)
+                foundedImages = True
+                for location in locatedImages:
+                    newYpos = location[1] + location[3] # Repositioning the pivot below the founded image
+                    newWidth = location[2] + correctionWidth
+                    description = read_text_from_region(location[0] - (correctionWidth // 2), newYpos, newWidth, location[3])
+                    if "Comprou" in description:
+                        print(f"Upgrade {power_up} already bought.")
+                        continue
 
-        # If none of the images are found, increment attempts and try again
-        attempts += 1
-        print("No relevant image found on PowerUp. Retrying...")
-        return False
-    
-    if attempts == max_attempts:
-        print(f"Max attempts to choose a power up. Exiting.")
-        return False
+                    print(f"Upgrade {power_up} powerUp chosen.")
+                    click_location(location[0], location[1], location[2], location[3])
+
+                    # Check if the message of not enoght skulls appeared
+                    if find_image(max_attempts, images['okButton']):
+                        print("Not enought money!")
+                        continue
+
+                    bought += 1
+                    if bought >= max_power_ups:
+                        print("Max Power Ups bought!")
+                        return True
+            else:
+                attempts += 1
+                print(f"No relevant image found for {power_up}. Retrying...")
     
     return True
 
+def read_text_from_region(x, y, width, height):
+    # Capture the region around the clicked button
+    screenshot = capture_screen()
+    roi = screenshot[y:y + height, x:x + width]
+    # cv2.imwrite("roi_image.png", roi)
+
+    roi = cv2.resize(roi, (507, 444)) # four times bigger than the original
+    
+    # Convert the ROI to grayscale
+    roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+    # cv2.imwrite("roi_gray_image.png", roi_gray)
+
+    text = pytesseract.image_to_string(roi_gray)
+
+    return text.strip()
+
 def main():
-    TakePowerUp = False
     print("HeroWars bot - Tower -> starting in 2 seconds!")
-    time.sleep(2)  # Wait for 1 second before starting the bot actions
+    time.sleep(2)
     print("HeroWars bot - Tower -> bot ready!")
 
-    max_attempts = 3
-    attempts = 0
+    global takePowerUp
+    takePowerUp = False
+    attacking = False
+    towerComplete = False
 
-    while attempts < max_attempts:
-        print("Awaiting 2 seconds for next command...")
-        time.sleep(2)  # Wait for 1 second before starting the bot actions
+    images = find_image_paths('images/HeroWars')
+    powerUpsImages = find_image_paths('images/HeroWars/powerUps')
+    
+    max_attempts = 3
+    defaultWait = 1
+
+    if find_image(max_attempts, images['tower']):
+        print("Entering the tower...")
+    else:
+        print("Already in tower!")
+
+    while True:
+        print(f"Awaiting {defaultWait} seconds for next command...")
+        time.sleep(defaultWait)
+
+        if towerComplete:
+            if find_image(max_attempts, images['changeSkull']):
+                if find_image(max_attempts, images['changeSkullIntoCoin']):
+                    if find_image(max_attempts, images['towerPoints']):
+                        if find_image(max_attempts, images['collectAll']):
+                            if find_image(max_attempts, images['exitFinal']):
+                                find_image(max_attempts, images['exitFinal'])
+                                closeApp("Tower Completed!")
+                            else:
+                                continue
+                        else:
+                            find_image(max_attempts, images['exitFinal'])
+                            continue
+                    else:
+                        continue
+                else:
+                    continue
+            else:
+                if find_image(max_attempts, images['towerPoints']):
+                    if find_image(max_attempts, images['collectAll']):
+                        if find_image(max_attempts, images['exitFinal']):
+                            find_image(max_attempts, images['exitFinal'])
+                            closeApp("Tower Completed!")
+                        else:
+                            continue
+                    else:
+                        find_image(max_attempts, images['exitFinal'])
+                        find_image(max_attempts, images['exitFinal'])
+                        closeApp("Tower Completed!")
+                else:
+                    continue
+
+        if attacking:
+            while True:
+                time.sleep(2)
+                if find_image(max_attempts, images['okBattleButton']):
+                    find_image(max_attempts, images['okBattleButton']) # Double Check
+                    attacking = False
+                    break
 
         # PowerUps
-        if TakePowerUp:
-            powerUpDone = powerUp()
-            if not powerUpDone:
-                print("Problem chosing a power up...")
+        if takePowerUp:
+            power_up_done = choose_power_up(powerUpsImages, images)
+
+            if not power_up_done:
+                print("Problem choosing a power up...")
                 break
             else:
-                TakePowerUp = False
-           
-                location = find_image_on_screen(exitButton)
-                if location:
-                    click_location(location[1], location[0], location[2], location[3])
-
-                    location = find_image_on_screen(arrowRight)
-                    if location:
-                        click_location(location[1], location[0], location[2], location[3])
+                takePowerUp = False
+                if find_image(max_attempts, images['exitButton']):
+                    if find_image(max_attempts, images['arrowRight']):
+                        print("Going to next floor...")
+                        time.sleep(2)
                     else:
-                        print("Problem going to next floor after power up... ending application")
-                        sys.exit()
+                        if find_image(max_attempts, images['arrowLeft']):
+                            print("Going to next floor...")
+                            time.sleep(2)
+                        else:
+                            print("Problem going to the next floor after power up... ending application")
+                            sys.exit()
                 else:
                     print("Problem closing power up window... ending application")
                     sys.exit()
 
-        # Look for battleDoor
-        location = find_image_on_screen(door)
-        if location:
-            print("Battle Door found.")
-            click_location(location[1], location[0], location[2], location[3])
-            subAttempts = 0
-            time.sleep(1)
-            while subAttempts < max_attempts:
-                location = find_image_on_screen(skipButton)
-                if location:
-                    print("Skip Button found.")
-                    click_location(location[1], location[0], location[2], location[3])
-                    break
-            attempts += 1
-            continue
+        if find_image(max_attempts, images['battleDoor']):
+            if is_in_floor_scene(max_attempts, images['menuButtons']):
+                print("Tried to click battleDoor, but not works!")
+            else:
+                if find_image(max_attempts, images['skipButton']):
+                    continue
+                else:
+                    if find_image(max_attempts, images['attackButton']):                        
+                        if find_image(max_attempts, images['toBattleButton']):
+                            time.sleep(2)
+                            if find_image(max_attempts, images['autoButton']):
+                                 if find_image(max_attempts, images['x5Button']):
+                                    attacking = True
+                                    continue
+                                 else:
+                                    closeApp("Problem activating x5")
+                            else:
+                                closeApp("Problem activating auto")
+                        else:
+                            closeApp("Problem going to battle")
+                    else:
+                        closeApp("Problem trying to attack")
 
-        # Look for blueChest, battleDoor, or energySphere
-        location = find_image_on_screen(blueChest)
-        if location:
-            print("Blue Chest found.")
-            click_location(location[1], location[0], location[2], location[3])
-            continue
+        if find_image(max_attempts, images['blueChest']):
+            if is_in_floor_scene(max_attempts, images['menuButtons']):
+                print("Tried to click blueChest, but not works!")
+            else:
+                # First check if the reward inst already picked
+                if find_image(max_attempts, images['continueButton']):
+                    continue
+                else:
+                    if find_image(max_attempts, images['chestReward']):
+                        time.sleep(2) # Time for chest run animation
+                        if find_image(max_attempts, images['continueButton']):
+                            continue
+                        else:
+                            print("Problem closing chest reward... ending application")
+                            sys.exit()
+                    else:
+                        print("Problem getting a chest reward... ending application")
+                        sys.exit()
 
-        location = find_image_on_screen(energyBase)
-        if location:
-            print("Energy Base found.")
-            TakePowerUp = True
-            click_location(location[1], location[0], location[2], location[3])
-            continue
+        if find_image(max_attempts, images['purpleChest']):
+            if is_in_floor_scene(max_attempts, images['menuButtons']):
+                print("Tried to click purpleChest, but not works!")
+            else:
+                # First check if the reward inst already picked
+                if find_image(max_attempts, images['continueButton']):
+                    continue
+                else:
+                    if find_image(max_attempts, images['chestReward']):
+                        time.sleep(2) # Time for chest run animation
+                        if find_image(max_attempts, images['continueButton']):
+                            continue
+                        else:
+                            print("Problem closing chest reward... ending application")
+                            sys.exit()
+                    else:
+                        print("Problem getting a chest reward... ending application")
+                        sys.exit()
 
-        location = find_image_on_screen(energySphere)
-        if location:
-            print("Energy Sphere found.")
-            TakePowerUp = True
-            click_location(location[1], location[0], location[2], location[3])
-            continue
+        if find_image(max_attempts, images['finalChest']):
+            if is_in_floor_scene(max_attempts, images['menuButtons']):
+                print("Tried to click finalChest, but not works!")
+            else:
+                # First check if the reward inst already picked
+                if find_image_noClick(max_attempts, images['buyButton']):
+                    if find_image(max_attempts, images['exitFinal']):
+                        towerComplete = True
+                        continue
+                    else:
+                        closeApp("Problem closing chest reward")  
+                else:
+                    if find_image(max_attempts, images['chestReward']):
+                        time.sleep(2) # Time for chest run animation
+                        if find_image(max_attempts, images['exitFinal']):
+                            towerComplete = True
+                            continue
+                        else:
+                            closeApp("Problem closing chest reward")                    
+                    else:                        
+                        closeApp("Problem getting a chest reward")                        
 
+        if find_image(max_attempts, images['energySphere']):
+            if is_in_floor_scene(max_attempts, images['menuButtons']):
+                print("Tried to click energySphere, but not works!")
+            else:
+                takePowerUp = True
+                continue
+
+        if find_image(max_attempts, images['energyBase']):
+            if is_in_floor_scene(max_attempts, images['menuButtons']):
+                print("Tried to click energyBase, but not works!")
+            else:
+                takePowerUp = True
+                continue
+
+def is_in_floor_scene(max_attempts, image):
+    time.sleep(1)
+    return find_image(max_attempts, image)
+
+def find_image_noClick(max_attempts, image, name = '', wait = 0):
+    return find_image(max_attempts, image, False, name, wait)
+
+def find_image(max_attempts, image, click = True, name = '', wait = 0):
+    time.sleep(wait)
+    if name == '':
+        filename = os.path.basename(image) # Get the filename from the path
+        name = os.path.splitext(filename)[0] # remove extension
+    
+    attempts = 0
+    while attempts < max_attempts:
+        # Look for tower
+        location = find_image_on_screen(image)
+        if location:
+            print(f"{name} found.")
+            if click: 
+                click_location(location[0], location[1], location[2], location[3])
+            return True
         # If none of the images are found, increment attempts and try again
         attempts += 1
-        print("No relevant image found. Retrying...")
+        print(f"No relevant image found for {name}. Retrying...")
 
     if attempts == max_attempts:
         print(f"Max attempts reached. Exiting.")
+        return False
+
+def find_image_paths(folder_path):
+    images = {}
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith(('.png', '.jpg', '.jpeg')):
+                image_name = os.path.splitext(file)[0]
+                images[image_name] = os.path.join(root, file)
+    return images
+
+def closeApp(msg):
+    print(msg, "... ending application")
+    sys.exit()
 
 if __name__ == "__main__":
     main()

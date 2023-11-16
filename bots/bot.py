@@ -8,6 +8,11 @@ import pytesseract
 
 save_path = 'images/screenshots'
 template_path = 'images/bot/countButton.jpg'
+template_test = 'images/HeroWars/powerUps/magicDefense.png'
+template_path = template_test
+
+doClick = False
+
 showImgs = False
 saveScreenshots = False
 
@@ -57,9 +62,12 @@ def click_location(x, y, template_width, template_height):
 
     (x, y) = pyautogui.position()
 
-    pyautogui.click(center_x, center_y, _pause=False)
-    pyautogui.moveTo(x, y)
-    pyautogui.moveTo(x, y)  # Double check
+    if doClick:
+        pyautogui.click(center_x, center_y, _pause=False)
+        pyautogui.moveTo(x, y)
+        pyautogui.moveTo(x, y)  # Double check
+    else:
+        pyautogui.moveTo(center_x, center_y)
 
 def read_text_from_region(x, y, width, height):
     # Capture the region around the clicked button
