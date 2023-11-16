@@ -13,8 +13,20 @@ blueChest = 'images/HeroWars/blueChest.png'
 blueChestReward = 'images/HeroWars/blueChestReward.png'
 continueButton = 'images/HeroWars/continueButton.png'
 energySphere = 'images/HeroWars/energySphere.png'
+energyBase = 'images/HeroWars/energyBase.png'
 exitButton = 'images/HeroWars/exitButton.png'
 skipButton = 'images/HeroWars/skipButton.png'
+
+damage1 = 'images/HeroWars/powerUps/damage1.png'
+damage2 = 'images/HeroWars/powerUps/damage2.png'
+damage3 = 'images/HeroWars/powerUps/damage3.png'
+damage4 = 'images/HeroWars/powerUps/damage4.png'
+armor1 = 'images/HeroWars/powerUps/armor1.png'
+armor2 = 'images/HeroWars/powerUps/armor2.png'
+armor4 = 'images/HeroWars/powerUps/armor4.png'
+magicDefense1 = 'images/HeroWars/powerUps/magicDefense1.png'
+magicDefense3 = 'images/HeroWars/powerUps/magicDefense3.png'
+magicDefense4 = 'images/HeroWars/powerUps/magicDefense4.png'
 
 showImgs = False
 saveScreenshots=False
@@ -83,47 +95,20 @@ def click_location(x, y, template_width, template_height):
 def powerUp():
     max_attempts = 3
     attempts = 0
-    return False
 
     while attempts < max_attempts:
         
-        # Look for battleDoor
-        location = find_image_on_screen(door)
+        location = find_image_on_screen(damage4)
         if location:
-            print("Battle Door found.")
+            print("Upgrade damage IV powerUp choosed.")
             click_location(location[1], location[0], location[2], location[3])
             continue
+        
 
-        # Look for skipButton
-        location = find_image_on_screen(skipButton)
-        if location:
-            print("Skip Button found.")
-            click_location(location[1], location[0], location[2], location[3])
-            continue
-
-        # Look for blueChest, battleDoor, or energySphere
-        location = find_image_on_screen(blueChest)
-        if location:
-            print("Blue Chest found.")
-            click_location(location[1], location[0], location[2], location[3])
-            continue
-
-        location = find_image_on_screen(door)
-        if location:
-            print("Battle Door found.")
-            click_location(location[1], location[0], location[2], location[3])
-            continue
-
-        location = find_image_on_screen(energySphere)
-        if location:
-            print("Energy Sphere found.")
-            TakePowerUp = True
-            click_location(location[1], location[0], location[2], location[3])
-            continue
 
         # If none of the images are found, increment attempts and try again
         attempts += 1
-        print("No relevant image found. Retrying...")
+        print("No relevant image found on PowerUp. Retrying...")
 
     if attempts == max_attempts:
         print(f"Max attempts to choose a power up. Exiting.")
@@ -131,12 +116,15 @@ def powerUp():
 
 def main():
     print("HeroWars bot - Tower -> started!")
-    time.sleep(1)  # Wait for 1 second before starting the bot actions
+    time.sleep(2)  # Wait for 1 second before starting the bot actions
 
     max_attempts = 3
     attempts = 0
 
     while attempts < max_attempts:
+        print("Awaiting 2 seconds for next command...")
+        time.sleep(2)  # Wait for 1 second before starting the bot actions
+
         # PowerUps
         if TakePowerUp:
             powerUpDone = powerUp()
@@ -149,13 +137,15 @@ def main():
         if location:
             print("Battle Door found.")
             click_location(location[1], location[0], location[2], location[3])
-            continue
-
-        # Look for skipButton
-        location = find_image_on_screen(skipButton)
-        if location:
-            print("Skip Button found.")
-            click_location(location[1], location[0], location[2], location[3])
+            subAttempts = 0
+            time.sleep(1)
+            while subAttempts < max_attempts:
+                location = find_image_on_screen(skipButton)
+                if location:
+                    print("Skip Button found.")
+                    click_location(location[1], location[0], location[2], location[3])
+                    break
+            attempts += 1
             continue
 
         # Look for blueChest, battleDoor, or energySphere
@@ -165,9 +155,10 @@ def main():
             click_location(location[1], location[0], location[2], location[3])
             continue
 
-        location = find_image_on_screen(door)
+        location = find_image_on_screen(energyBase)
         if location:
-            print("Battle Door found.")
+            print("Energy Base found.")
+            TakePowerUp = True
             click_location(location[1], location[0], location[2], location[3])
             continue
 

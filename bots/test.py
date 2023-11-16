@@ -1,32 +1,39 @@
-from screeninfo import get_monitors
-from desktopmagic.screengrab_win32 import getRectAsImage, getScreenAsImage
-import os
-import time
+# import pytesseract as tess
+# from PIL import Image
 
-save_path = 'images/screenshots'
-show_images = False
+# path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-def capture_and_save_screenshots(show_image=False):
-    # Create the screenshots folder if it doesn't exist
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-    print("monitors: ",get_monitors())
+# tess.pytesseract.tesseract_cmd = path
+# # img = Image.open('images/bot/countButton.png')
 
-    for i, monitor in enumerate(get_monitors()):
-        # Take a screenshot of the current monitor
-        print(monitor.x, monitor.y, monitor.width, monitor.height)
-        screenshot = getRectAsImage((monitor.x, monitor.y, monitor.width, monitor.height))
-        # screenshot = getScreenAsImage()
+# # Example: Grayscale and thresholding
+# img = Image.open('images/bot/countButton.png').convert('L')
+# img = img.point(lambda x: 0 if x < 128 else 255)
+# img.show()
+# try:
+#     # text = tess.image_to_string(img)
+#     text = tess.image_to_string(img, lang='eng')
+#     print("Text:", text)
+# except Exception as e:
+#     print("Error:", e)
 
-        # Save the screenshot with a timestamp as the filename
-        save_filename = os.path.join(save_path, f"screenshot_{int(time.time())}_monitor{i + 1}_{monitor.is_primary}.png")
-        screenshot.save(save_filename)
 
-        print(f"Screenshot saved at {save_filename} - Monitor: {monitor.name}")
+import pytesseract
+import cv2
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-        # Optionally show the screenshot
-        if show_image:
-            screenshot.show()
+img = cv2.imread('images/bot/countButton.png')
 
-if __name__ == "__main__":
-    capture_and_save_screenshots(show_images)
+img = cv2.resize(img, (600, 360))
+
+print("teste 1: ", pytesseract.image_to_string(img))
+
+roi_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# Save the ROI image for debugging
+cv2.imwrite("roi_image.png", img)
+
+# Perform text recognition using pytesseract
+text = pytesseract.image_to_string(roi_gray)
+
+print("teste 2: ", text)

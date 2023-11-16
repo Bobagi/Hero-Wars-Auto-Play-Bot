@@ -4,6 +4,10 @@ Python bot game automation
 
 The dependencies are specified on requirements.txt.
 
+In windows, you will have to install the tesseract to bot work properly, and install it in the path 'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+The file for installation is located at tesseract folder.
+
 To work on code and start the bot, create a virtual environment:
 
 ```sh

@@ -161,3 +161,4 @@ cython_debug/
 
 images/screenshots/*.*
 images/screenshots/*/*
+roi_image.png
