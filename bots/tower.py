@@ -4,6 +4,7 @@ import pyautogui
 import os
 import time
 from desktopmagic.screengrab_win32 import getRectAsImage, getScreenAsImage
+import sys
 
 save_path = 'images/screenshots'
 
@@ -38,15 +39,13 @@ def capture_screen():
     # screenshot = pyautogui.screenshot()
     screenshot = getScreenAsImage()
     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)  # Use RGB2BGR for OpenCV
-    print("screenshot data: ", screenshot.dtype, screenshot.shape)
 
      # Save the screenshot
-    if save_path:
+    if save_path and saveScreenshots:
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         save_filename = os.path.join(save_path, f"screenshot_{int(time.time())}.png")
         cv2.imwrite(save_filename, screenshot)
-        print(f"Screenshot saved at {save_filename}")
 
     return screenshot
 
@@ -54,7 +53,6 @@ def find_image_on_screen(template_image_path):
     # Find a particular image on the screen
     screen = capture_screen()
     template = cv2.imread(template_image_path)
-    print("template img data: ",template.dtype, template.shape)
 
     if showImgs:
         cv2.imshow('Screen', screen)
@@ -95,28 +93,89 @@ def click_location(x, y, template_width, template_height):
 def powerUp():
     max_attempts = 3
     attempts = 0
-
-    while attempts < max_attempts:
+    max_powerUps = 3
+    powerUpsTaken = 0
+    while attempts < max_attempts and powerUpsTaken < max_powerUps:
         
         location = find_image_on_screen(damage4)
         if location:
             print("Upgrade damage IV powerUp choosed.")
             click_location(location[1], location[0], location[2], location[3])
+            powerUpsTaken += 1
+            continue
+        location = find_image_on_screen(damage3)
+        if location:
+            print("Upgrade damage III powerUp choosed.")
+            click_location(location[1], location[0], location[2], location[3])
+            powerUpsTaken += 1
+            continue
+        location = find_image_on_screen(damage2)
+        if location:
+            print("Upgrade damage II powerUp choosed.")
+            click_location(location[1], location[0], location[2], location[3])
+            powerUpsTaken += 1
+            continue
+        location = find_image_on_screen(damage1)
+        if location:
+            print("Upgrade damage I powerUp choosed.")
+            click_location(location[1], location[0], location[2], location[3])
+            powerUpsTaken += 1
+            continue
+
+        location = find_image_on_screen(armor4)
+        if location:
+            print("Upgrade armor IV powerUp choosed.")
+            click_location(location[1], location[0], location[2], location[3])
+            powerUpsTaken += 1
+            continue
+        location = find_image_on_screen(armor2)
+        if location:
+            print("Upgrade armor II powerUp choosed.")
+            click_location(location[1], location[0], location[2], location[3])
+            powerUpsTaken += 1
+            continue
+        location = find_image_on_screen(armor1)
+        if location:
+            print("Upgrade armor I powerUp choosed.")
+            click_location(location[1], location[0], location[2], location[3])
+            powerUpsTaken += 1
             continue
         
-
+        location = find_image_on_screen(magicDefense4)
+        if location:
+            print("Upgrade magic defense IV powerUp choosed.")
+            click_location(location[1], location[0], location[2], location[3])
+            powerUpsTaken += 1
+            continue
+        location = find_image_on_screen(magicDefense3)
+        if location:
+            print("Upgrade magic defense III powerUp choosed.")
+            click_location(location[1], location[0], location[2], location[3])
+            powerUpsTaken += 1
+            continue
+        location = find_image_on_screen(magicDefense1)
+        if location:
+            print("Upgrade magic defense I powerUp choosed.")
+            click_location(location[1], location[0], location[2], location[3])
+            powerUpsTaken += 1
+            continue
 
         # If none of the images are found, increment attempts and try again
         attempts += 1
         print("No relevant image found on PowerUp. Retrying...")
-
+        return False
+    
     if attempts == max_attempts:
         print(f"Max attempts to choose a power up. Exiting.")
         return False
+    
+    return True
 
 def main():
-    print("HeroWars bot - Tower -> started!")
+    TakePowerUp = False
+    print("HeroWars bot - Tower -> starting in 2 seconds!")
     time.sleep(2)  # Wait for 1 second before starting the bot actions
+    print("HeroWars bot - Tower -> bot ready!")
 
     max_attempts = 3
     attempts = 0
@@ -131,6 +190,22 @@ def main():
             if not powerUpDone:
                 print("Problem chosing a power up...")
                 break
+            else:
+                TakePowerUp = False
+           
+                location = find_image_on_screen(exitButton)
+                if location:
+                    click_location(location[1], location[0], location[2], location[3])
+
+                    location = find_image_on_screen(arrowRight)
+                    if location:
+                        click_location(location[1], location[0], location[2], location[3])
+                    else:
+                        print("Problem going to next floor after power up... ending application")
+                        sys.exit()
+                else:
+                    print("Problem closing power up window... ending application")
+                    sys.exit()
 
         # Look for battleDoor
         location = find_image_on_screen(door)
