@@ -268,10 +268,18 @@ def main():
                             time.sleep(2)
                             if find_image(max_attempts, images['autoButton']):
                                  if find_image(max_attempts, images['x5Button']):
-                                    attacking = True
-                                    continue
+                                    if find_image_noClick(max_attempts, images['camButton']):
+                                        attacking = True
+                                        continue
+                                    else:
+                                        find_image(max_attempts, images['exitFinal'])
+                                        find_image(max_attempts, images['exitEvent'])
+                                        attacking = True
+                                        continue
                                  else:
-                                    closeApp("Problem activating x5")
+                                    attacking = True
+                                    print("Problem activating x5")
+                                    continue
                             else:
                                 closeApp("Problem activating auto")
                         else:
@@ -355,7 +363,7 @@ def main():
 
 def is_in_floor_scene(max_attempts, image):
     time.sleep(1)
-    return find_image(max_attempts, image)
+    return find_image_noClick(max_attempts, image)
 
 def find_image_noClick(max_attempts, image, name = '', wait = 0):
     return find_image(max_attempts, image, False, name, wait)
