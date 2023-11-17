@@ -7,11 +7,11 @@ from desktopmagic.screengrab_win32 import getRectAsImage, getScreenAsImage
 import pytesseract
 
 save_path = 'images/screenshots'
-template_path = 'images/bot/countButton.jpg'
+template_path = 'images/bot/countButton.png'
 template_test = 'images/HeroWars/powerUps/magicDefense.png'
-template_path = template_test
+# template_path = template_test
 
-doClick = False
+doClick = True
 
 showImgs = False
 saveScreenshots = False
@@ -35,7 +35,7 @@ def capture_screen():
 def find_image_on_screen(template_image_path):
     screen = capture_screen()
     template = cv2.imread(template_image_path)
-    print("template img data: ", template.dtype, template.shape)
+    # print("template img data: ", template.dtype, template.shape)
 
     if showImgs:
         cv2.imshow('Screen', screen)
