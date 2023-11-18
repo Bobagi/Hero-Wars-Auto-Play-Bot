@@ -473,7 +473,7 @@ def get_monitor_resolution(max_attempts, image, wait = 0):
         
         if resolution is not None:
             resWidth, resHeight = resolution
-            print(f"{name} found.")
+            print(f"{name} found.", "Monitor resolution: ",resWidth,"x",resHeight)
             return resWidth, resHeight
         # If none of the images are found, increment attempts and try again
         attempts += 1
