@@ -2,11 +2,12 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk  # You may need to install the Pillow library: pip install Pillow
 import os
+import subprocess
 
-class ImageSearchApp:
+class HeroWarsBot:
     def __init__(self, root):
         self.root = root
-        self.root.title("Eyeforce")
+        self.root.title("Hero Wars Time Saver edition")
 
         # Set the background color to blue
         self.root.configure(bg='black')  # Use your preferred shade of blue, this is a common one
@@ -19,7 +20,7 @@ class ImageSearchApp:
         self.root.iconbitmap(icon_path)
 
         # Add a cool text with the name of your bot
-        title_label = tk.Label(self.root, text="The lazy slaver", font=("Helvetica", 32, "bold italic"), bg='black', fg='yellow')
+        title_label = tk.Label(self.root, text="Choose game module", font=("Helvetica", 32, "bold italic"), bg='black', fg='yellow')
         title_label.pack(pady=10)
 
         self.create_widgets()
@@ -32,11 +33,16 @@ class ImageSearchApp:
         frame_buttons = tk.Frame(self.root, bg='#000000')  # Create a frame to hold the buttons
         frame_buttons.pack()
 
-        self.browse_button = tk.Button(frame_buttons, text="Browse", font=("Helvetica", 12, "bold italic"), bg='yellow', fg='black', command=self.browse_image)
+        self.browse_button = tk.Button(frame_buttons, text="Tower", font=("Helvetica", 12, "bold italic"), bg='yellow', fg='black', command=self.browse_tower_script)
         self.browse_button.pack(side=tk.LEFT, padx=10, pady=10)
 
         self.search_button = tk.Button(frame_buttons, text="Search Image", font=("Helvetica", 12, "bold italic"), bg='yellow', fg='black', command=self.browse_image)
         self.search_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+    def browse_tower_script(self):
+        # Run the tower.py script
+        script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tower.py')
+        subprocess.run(["python", script_path])
 
     def browse_image(self):
         # Open a file dialog to choose the screenshot
@@ -65,5 +71,5 @@ class ImageSearchApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = ImageSearchApp(root)
+    app = HeroWarsBot(root)
     root.mainloop()
