@@ -21,6 +21,8 @@ takePowerUp = False
 resWidth = 0 
 resHeight = 0
 
+threshold = 0.8
+
 def capture_screen():
     screenshot = getScreenAsImage()
     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)  # Use RGB2BGR for OpenCV
@@ -48,17 +50,26 @@ def find_image_on_screen(template_image_path):
         print("Error: Unable to read the template image.")
         return None
 
-    res = cv2.matchTemplate(screen, template, cv2.TM_CCOEFF_NORMED)
+    global resWidth, resHeight
+    # Calculate scaling factor based on the monitor resolution
+    scaling_factor_width = resWidth / 1360  # Assuming 1360x768 is the reference resolution
+    scaling_factor_height = resHeight / 768
 
-    threshold = 0.8
+    template_resized = cv2.resize(template, None, fx=scaling_factor_width, fy=scaling_factor_height)
+    
+    res = cv2.matchTemplate(screen, template_resized, cv2.TM_CCOEFF_NORMED)
+
+    global threshold
     loc = np.where(res >= threshold)
+
     if loc[0].size > 0:
         # Get the width and height of the template image
-        template_width, template_height = template.shape[1], template.shape[0]
+        template_width, template_height = template_resized.shape[1], template_resized.shape[0]
         y, x = loc[0][0], loc[1][0]
 
         return x, y, template_width, template_height  # Return coordinates of the match
     return None
+
 
 def find_image_monitor_resolution(template_image_path):
     # Find a particular image on the screen
@@ -77,7 +88,7 @@ def find_image_monitor_resolution(template_image_path):
 
     res = cv2.matchTemplate(screen, template, cv2.TM_CCOEFF_NORMED)
 
-    threshold = 0.8
+    global threshold
     loc = np.where(res >= threshold)
     if loc[0].size > 0:
         # Get the width and height of the template image
@@ -121,9 +132,16 @@ def find_all_images_on_screen(template_image_path):
 
     matches = []
 
-    threshold = 0.8
+    global threshold
     while True:
-        res = cv2.matchTemplate(screen, template, cv2.TM_CCOEFF_NORMED)
+        global resWidth, resHeight
+        # Calculate scaling factor based on the monitor resolution
+        scaling_factor_width = resWidth / 1360  # Assuming 1360x768 is the reference resolution
+        scaling_factor_height = resHeight / 768
+
+        template_resized = cv2.resize(template, None, fx=scaling_factor_width, fy=scaling_factor_height)
+        
+        res = cv2.matchTemplate(screen, template_resized, cv2.TM_CCOEFF_NORMED)
 
         loc = np.where(res >= threshold)
         if loc[0].size > 0:
@@ -243,7 +261,14 @@ def main():
     resWidth, resHeigth = get_monitor_resolution(max_attempts, images['headerIcon'])
     if not (resWidth and resHeigth):
         closeApp("Can't find a web browser with the Hero Wars Domination Era logo at the header")
-
+    else:
+        if resWidth == 1360 and resHeigth == 768:
+            print("Using original resolution, threshold set to 80%")
+        else:
+            print("Not using 1360x768 resolution, threshold set to 55%")
+            global threshold
+            threshold = 0.55
+    
     if find_image(max_attempts, images['tower']):
         print("Entering the tower...")
     else:
@@ -472,6 +497,7 @@ def get_monitor_resolution(max_attempts, image, wait = 0):
         resolution = find_image_monitor_resolution(image)
         
         if resolution is not None:
+            global resWidth, resHeight
             resWidth, resHeight = resolution
             print(f"{name} found.", "Monitor resolution: ",resWidth,"x",resHeight)
             return resWidth, resHeight
