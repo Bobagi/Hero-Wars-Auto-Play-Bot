@@ -175,6 +175,7 @@ def main():
     global takePowerUp
     takePowerUp = False
     attacking = False
+    exitBattleAttempts = 0
     towerComplete = False
 
     images = find_image_paths('images/HeroWars')
@@ -230,7 +231,15 @@ def main():
                 if find_image(max_attempts, images['okBattleButton']):
                     find_image(max_attempts, images['okBattleButton']) # Double Check
                     attacking = False
+                    exitBattleAttempts = 0
                     break
+                else:
+                    exitBattleAttempts += 1
+                    if exitBattleAttempts > max_attempts:
+                        exitBattleAttempts = 0
+                        if not find_image_noClick(max_attempts, images["camButton"]):
+                            attacking = False
+                            continue
 
         # PowerUps
         if takePowerUp:
@@ -241,7 +250,7 @@ def main():
                 break
             else:
                 takePowerUp = False
-                if find_image(max_attempts, images['exitButton']):
+                if find_image(max_attempts, images['exitFinal']):
                     if find_image(max_attempts, images['arrowRight']):
                         print("Going to next floor...")
                         time.sleep(2)
