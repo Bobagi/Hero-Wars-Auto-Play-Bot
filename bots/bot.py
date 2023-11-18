@@ -4,6 +4,7 @@ import pyautogui
 import os
 import time
 from desktopmagic.screengrab_win32 import getRectAsImage, getScreenAsImage
+import win32api
 import pytesseract
 
 save_path = 'images/screenshots'
@@ -53,6 +54,27 @@ def find_image_on_screen(template_image_path):
     loc = np.where(res >= threshold)
     if loc[0].size > 0:
         template_width, template_height = template.shape[1], template.shape[0]
+        y, x = loc[0][0], loc[1][0]
+
+        # Ensure that coordinates are integers
+        x, y, template_width, template_height = map(int, (x, y, template_width, template_height))
+
+        # Ensure that coordinates are integers
+        x, y, template_width, template_height = map(int, (x, y, template_width, template_height))
+
+        # Get monitor information for the specified point
+        monitor_info = win32api.GetMonitorInfo(win32api.MonitorFromPoint((x, y)))
+
+        # Get the screen resolution where the template was found
+        screen_width, screen_height = (
+            monitor_info["Monitor"][2] - monitor_info["Monitor"][0],
+            monitor_info["Monitor"][3] - monitor_info["Monitor"][1],
+        )
+        
+        print("resolution: ",screen_width, "x", screen_height)
+
+
+        
         return loc[0][0], loc[1][0], template_width, template_height
     return None
 

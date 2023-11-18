@@ -7,6 +7,7 @@ import sys
 from desktopmagic.screengrab_win32 import getRectAsImage, getScreenAsImage
 from collections import OrderedDict
 import pytesseract
+import win32api # To detect the monitor resolution for multi-scaling
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -14,6 +15,11 @@ save_path = 'images/screenshots'
 
 showImgs = False
 saveScreenshots=False
+
+takePowerUp = False
+
+resWidth = 0 
+resHeight = 0
 
 def capture_screen():
     screenshot = getScreenAsImage()
@@ -52,6 +58,50 @@ def find_image_on_screen(template_image_path):
         y, x = loc[0][0], loc[1][0]
 
         return x, y, template_width, template_height  # Return coordinates of the match
+    return None
+
+def find_image_monitor_resolution(template_image_path):
+    # Find a particular image on the screen
+    screen = capture_screen()
+    template = cv2.imread(template_image_path)
+
+    if showImgs:
+        cv2.imshow('Screen', screen)
+        cv2.imshow('Template', template)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    if template is None:
+        print("Error: Unable to read the template image.")
+        return None
+
+    res = cv2.matchTemplate(screen, template, cv2.TM_CCOEFF_NORMED)
+
+    threshold = 0.8
+    loc = np.where(res >= threshold)
+    if loc[0].size > 0:
+        # Get the width and height of the template image
+        template_width, template_height = template.shape[1], template.shape[0]
+        y, x = loc[0][0], loc[1][0]
+
+        # Ensure that coordinates are integers
+        x, y, template_width, template_height = map(int, (x, y, template_width, template_height))
+
+        # Ensure that coordinates are integers
+        x, y, template_width, template_height = map(int, (x, y, template_width, template_height))
+
+        # Get monitor information for the specified point
+        monitor_info = win32api.GetMonitorInfo(win32api.MonitorFromPoint((x, y)))
+
+        # Get the screen resolution where the template was found
+        screen_width, screen_height = (
+            monitor_info["Monitor"][2] - monitor_info["Monitor"][0],
+            monitor_info["Monitor"][3] - monitor_info["Monitor"][1],
+        )
+        
+        print("resolution: ",screen_width, "x", screen_height)
+
+        return screen_width, screen_height  # Return monitor resolution
     return None
 
 def find_all_images_on_screen(template_image_path):
@@ -168,11 +218,17 @@ def read_text_from_region(x, y, width, height):
     return text.strip()
 
 def main():
-    print("HeroWars bot - Tower -> starting in 2 seconds!")
+    print(" ___       _              _ ")
+    print("| . > ___ | |_  ___  ___ <_>")
+    print("| . \/ . \| . \<_> |/ . || |")
+    print("|___/\___/|___/<___|\_. ||_|")
+    print("                    <___'   ")
+    print("                    Presents")
+    print("HeroWars bot - Tower")
+    print("Starting in 2 seconds...")
     time.sleep(2)
     print("HeroWars bot - Tower -> bot ready!")
-
-    global takePowerUp
+    
     takePowerUp = False
     attacking = False
     exitBattleAttempts = 0
@@ -183,6 +239,10 @@ def main():
     
     max_attempts = 3
     defaultWait = 1
+
+    resWidth, resHeigth = get_monitor_resolution(max_attempts, images['headerIcon'])
+    if not (resWidth and resHeigth):
+        closeApp("Can't find a web browser with the Hero Wars Domination Era logo at the header")
 
     if find_image(max_attempts, images['tower']):
         print("Entering the tower...")
@@ -399,6 +459,29 @@ def find_image(max_attempts, image, click = True, name = '', wait = 0):
     if attempts == max_attempts:
         print(f"Max attempts reached. Exiting.")
         return False
+    
+def get_monitor_resolution(max_attempts, image, wait = 0):
+    time.sleep(wait)
+    
+    filename = os.path.basename(image) # Get the filename from the path
+    name = os.path.splitext(filename)[0] # remove extension
+    
+    attempts = 0
+    while attempts < max_attempts:
+        # Look for tower
+        resolution = find_image_monitor_resolution(image)
+        
+        if resolution is not None:
+            resWidth, resHeight = resolution
+            print(f"{name} found.")
+            return resWidth, resHeight
+        # If none of the images are found, increment attempts and try again
+        attempts += 1
+        print(f"No relevant image found for {name}. Retrying...")
+
+    if attempts == max_attempts:
+        print(f"Max attempts reached. Exiting.")
+        return None, None
 
 def find_image_paths(folder_path):
     images = {}
