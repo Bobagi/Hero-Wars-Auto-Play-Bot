@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk  # You may need to install the Pillow library: pip install Pillow
 import os
-import subprocess
+from tower import main as mainTower
 
 class HeroWarsBot:
     def __init__(self, root):
@@ -39,10 +39,13 @@ class HeroWarsBot:
         self.search_button = tk.Button(frame_buttons, text="Search Image", font=("Helvetica", 12, "bold italic"), bg='yellow', fg='black', command=self.browse_image)
         self.search_button.pack(side=tk.LEFT, padx=10, pady=10)
 
+        # Add a label for "by Bobagi"
+        self.by_label = tk.Label(self.root, text="by Bobagi", font=("Helvetica", 10), bg='black', fg='yellow')
+        self.by_label.pack(side=tk.RIGHT, padx=10, pady=10, anchor='se')  # Pack it to the right bottom corner
+
+
     def browse_tower_script(self):
-        # Run the tower.py script
-        script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tower.py')
-        subprocess.run(["python", script_path])
+        mainTower()
 
     def browse_image(self):
         # Open a file dialog to choose the screenshot
@@ -61,13 +64,6 @@ class HeroWarsBot:
 
             # Store the file path for later use
             self.file_path = file_path
-
-    def search_image(self):
-        # Call your image search function with the selected file path
-        if hasattr(self, 'file_path'):
-            search_result = your_bot_function(self.file_path)
-            # Do something with the search result, e.g., display it in a messagebox
-            tk.messagebox.showinfo("Search Result", f"Image found: {search_result}")
 
 if __name__ == "__main__":
     root = tk.Tk()
