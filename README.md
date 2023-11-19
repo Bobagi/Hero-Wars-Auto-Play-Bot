@@ -4,7 +4,7 @@ Python bot game automation
 
 For that to work, you need to have installed Python (used version 3.12.0 for that project): https://www.python.org/downloads/release/python-3120/
 
-In windows, you will have to install the tesseract to bot work properly, and install it in the path 'C:\Program Files\Tesseract-OCR\tesseract.exe'
+In windows, you will have to install the tesseract to bot work properly, and install it in the path `C:\Program Files\Tesseract-OCR\tesseract.exe`
 
 The file for installation is located at tesseract folder.
 
@@ -16,11 +16,11 @@ python -m venv venv
 
 Then, activate your virtual environment:
 
-```sh
+```py
 .\venv\Scripts\activate
 ```
 
-The dependencies are specified on requirements.txt.
+The dependencies are specified on `requirements.txt`.
 To install the depencies, go to the project folder and use:
 
 ```sh
