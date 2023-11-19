@@ -36,7 +36,7 @@ pip freeze > requirements.txt
 them, run the code:
 
 ```sh
-python bot.py
+python launcher.py
 ```
 
 To end bot, use ´CTRL + C´ and desactivate the virtual environment:
@@ -50,16 +50,16 @@ deactivate
 To build the application
 
 Navigate to Your Script's Directory:
-Open the command prompt and navigate to the directory containing your Python script (`bot.py`).
+Open the command prompt and navigate to the directory containing your Python script (`launcher.py`).
 
 Create the Executable:
 Run the following command to create the executable:
 
 ```sh
-pyinstaller --onefile bot.py
+pyinstaller --onefile --add-data "icon.ico;." --add-data "../images;images" launcher.py
 ```
 
-This command will create a dist folder in your script's directory, containing the executable file (`bot.exe`).
+This command will create a dist folder in your script's directory, containing the executable file (`launcher.exe`).
 
 Find the Executable:
 Navigate to the dist folder, and you'll find your executable (`bot.exe`).

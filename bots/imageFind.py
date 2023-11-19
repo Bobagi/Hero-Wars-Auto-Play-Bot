@@ -10,7 +10,7 @@ import win32api # To detect the monitor resolution for multi-scaling
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-save_path = 'images/screenshots'
+save_path = '../images/screenshots'
 
 showImgs = False
 saveScreenshots=False
@@ -240,14 +240,27 @@ def get_monitor_resolution(max_attempts, image, wait = 0):
         return None, None
 
 def find_image_paths(folder_path):
+    if getattr(sys, 'frozen', False):
+        # Running in PyInstaller one-file mode
+        base_path = sys._MEIPASS
+    else:
+        # Running in a normal Python environment
+        base_path = os.path.abspath(folder_path)
+
     images = {}
-    for root, dirs, files in os.walk(folder_path):
+    for root, dirs, files in os.walk(base_path):
         for file in files:
             if file.endswith(('.png', '.jpg', '.jpeg')):
                 image_name = os.path.splitext(file)[0]
                 images[image_name] = os.path.join(root, file)
+
     return images
 
 def closeApp(msg):
     print(msg, "... ending application")
+    
+    if getattr(sys, 'frozen', False):
+        input()
+    
     sys.exit()
+        

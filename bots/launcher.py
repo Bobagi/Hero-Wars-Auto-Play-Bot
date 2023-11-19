@@ -36,8 +36,8 @@ class HeroWarsBot:
         self.browse_button = tk.Button(frame_buttons, text="Tower", font=("Helvetica", 12, "bold italic"), bg='yellow', fg='black', command=self.browse_tower_script)
         self.browse_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.search_button = tk.Button(frame_buttons, text="Search Image", font=("Helvetica", 12, "bold italic"), bg='yellow', fg='black', command=self.browse_image)
-        self.search_button.pack(side=tk.LEFT, padx=10, pady=10)
+        # self.search_button = tk.Button(frame_buttons, text="Search Image", font=("Helvetica", 12, "bold italic"), bg='yellow', fg='black', command=self.browse_image)
+        # self.search_button.pack(side=tk.LEFT, padx=10, pady=10)
 
         # Add a label for "by Bobagi"
         self.by_label = tk.Label(self.root, text="by Bobagi", font=("Helvetica", 10), bg='black', fg='yellow')

@@ -61,8 +61,12 @@ def main():
     exitBattleAttempts = 0
     towerComplete = False
 
-    images = find_image_paths('images/HeroWars')
-    powerUpsImages = find_image_paths('images/HeroWars/powerUps')
+    images = find_image_paths('../images/HeroWars')
+    powerUpsImages = find_image_paths('../images/HeroWars/powerUps')
+    
+    # print(images.keys())
+    # print(images)
+    # sys.exit()
     
     max_attempts = 3
     defaultWait = 1
