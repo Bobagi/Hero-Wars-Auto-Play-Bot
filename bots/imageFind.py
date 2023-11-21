@@ -239,13 +239,13 @@ def get_monitor_resolution(max_attempts, image, wait = 0):
         print(f"Max attempts reached. Exiting.")
         return None, None
 
-def find_image_paths(folder_path):
+def find_image_paths(folder_path = ''):
     if getattr(sys, 'frozen', False):
         # Running in PyInstaller one-file mode
         base_path = sys._MEIPASS
     else:
         # Running in a normal Python environment
-        base_path = os.path.abspath(folder_path)
+        base_path = folder_path if folder_path != '' else 'images/HeroWars'
 
     images = {}
     for root, dirs, files in os.walk(base_path):
@@ -255,12 +255,4 @@ def find_image_paths(folder_path):
                 images[image_name] = os.path.join(root, file)
 
     return images
-
-def closeApp(msg):
-    print(msg, "... ending application")
-    
-    if getattr(sys, 'frozen', False):
-        input()
-    
-    sys.exit()
         

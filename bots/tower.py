@@ -1,10 +1,14 @@
 from imageFind import *
+from general import *
 from collections import OrderedDict
 
-def choose_power_up(power_ups_types, images):
+max_attempts = 3
+images = {}
+
+def choose_power_up(power_ups_types):
+    global max_attempts, images
     desired_order = ['damage', 'armor', 'magicDefense']
     power_ups_types = OrderedDict((key, power_ups_types[key]) for key in desired_order)
-    max_attempts = 3
     max_power_ups = 3
     bought = 0
     correctionWidth = 20
@@ -45,13 +49,8 @@ def choose_power_up(power_ups_types, images):
     return True
 
 def main():
-    print(" ___       _              _ ")
-    print("| . > ___ | |_  ___  ___ <_>")
-    print("| . \/ . \| . \<_> |/ . || |")
-    print("|___/\___/|___/<___|\_. ||_|")
-    print("                    <___'   ")
-    print("                    Presents")
-    print("HeroWars bot - Tower")
+    drawHeader()
+    print("\n\nHeroWars bot - Tower")
     print("Starting in 2 seconds...")
     time.sleep(2)
     print("HeroWars bot - Tower -> bot ready!")
@@ -61,14 +60,10 @@ def main():
     exitBattleAttempts = 0
     towerComplete = False
 
-    images = find_image_paths('../images/HeroWars')
-    powerUpsImages = find_image_paths('../images/HeroWars/powerUps')
+    global images
+    images = find_image_paths()
+    powerUpsImages = find_image_paths()
     
-    # print(images.keys())
-    # print(images)
-    # sys.exit()
-    
-    max_attempts = 3
     defaultWait = 1
 
     resWidth, resHeigth = get_monitor_resolution(max_attempts, images['headerIcon'])
@@ -82,10 +77,8 @@ def main():
             global threshold
             threshold = 0.55
     
-    if find_image(max_attempts, images['tower']):
-        print("Entering the tower...")
-    else:
-        print("Already in tower!")
+    if not enterTower():
+        closeApp('Cannot enter the tower!')
 
     while True:
         print(f"Awaiting {defaultWait} seconds for next command...")
@@ -141,7 +134,7 @@ def main():
 
         # PowerUps
         if takePowerUp:
-            power_up_done = choose_power_up(powerUpsImages, images)
+            power_up_done = choose_power_up(powerUpsImages)
 
             if not power_up_done:
                 print("Problem choosing a power up...")
@@ -267,6 +260,21 @@ def main():
             else:
                 takePowerUp = True
                 continue
+
+def enterTower():
+    global max_attempts, images
+    if find_image(max_attempts, images['tower']):
+        print("Entering the tower...")
+    else:
+        if find_image(max_attempts, images['towerNight']):
+            print("Entering the tower...")
+        else:
+            if find_image_noClick(max_attempts, images['menuButtons']):
+                print("Already in tower!")
+            else:
+                return False
+            
+    return True
 
 if __name__ == "__main__":
     main()
