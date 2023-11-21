@@ -48,6 +48,21 @@ def choose_power_up(power_ups_types):
     
     return True
 
+def enterTower():
+    global max_attempts, images
+    if find_image(max_attempts, images['tower']):
+        print("Entering the tower...")
+    else:
+        if find_image(max_attempts, images['towerNight']):
+            print("Entering the tower...")
+        else:
+            if find_image_noClick(max_attempts, images['menuButtons']):
+                print("Already in tower!")
+            else:
+                return False
+            
+    return True
+
 def main():
     drawHeader()
     print("\n\nHeroWars bot - Tower")
@@ -72,10 +87,10 @@ def main():
     else:
         if resWidth == 1360 and resHeigth == 768:
             print("Using original resolution, threshold set to 80%")
+            setThreshold(0.8)
         else:
             print("Not using 1360x768 resolution, threshold set to 55%")
-            global threshold
-            threshold = 0.55
+            setThreshold(0.55)
     
     if not enterTower():
         closeApp('Cannot enter the tower!')
@@ -260,21 +275,6 @@ def main():
             else:
                 takePowerUp = True
                 continue
-
-def enterTower():
-    global max_attempts, images
-    if find_image(max_attempts, images['tower']):
-        print("Entering the tower...")
-    else:
-        if find_image(max_attempts, images['towerNight']):
-            print("Entering the tower...")
-        else:
-            if find_image_noClick(max_attempts, images['menuButtons']):
-                print("Already in tower!")
-            else:
-                return False
-            
-    return True
 
 if __name__ == "__main__":
     main()

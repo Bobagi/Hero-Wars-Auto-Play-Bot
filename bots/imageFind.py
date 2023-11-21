@@ -20,7 +20,11 @@ takePowerUp = False
 resWidth = 0 
 resHeight = 0
 
-threshold = 0.8
+threshold = 0
+
+def setThreshold(value):
+    global threshold
+    threshold = value
 
 def capture_screen():
     screenshot = getScreenAsImage()
@@ -245,7 +249,7 @@ def find_image_paths(folder_path = ''):
         base_path = sys._MEIPASS
     else:
         # Running in a normal Python environment
-        base_path = folder_path if folder_path != '' else 'images/HeroWars'
+        base_path = 'images/HeroWars' if folder_path != '' else 'images/HeroWars/' + folder_path
 
     images = {}
     for root, dirs, files in os.walk(base_path):
