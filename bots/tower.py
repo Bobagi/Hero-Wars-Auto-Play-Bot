@@ -78,7 +78,8 @@ def main():
     global images
     images = find_image_paths()
     powerUpsImages = find_image_paths()
-    
+    setResolutionScreenshots(1360, 768)
+
     defaultWait = 1
 
     resWidth, resHeigth = get_monitor_resolution(max_attempts, images['headerIcon'])
