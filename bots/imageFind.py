@@ -73,7 +73,7 @@ def find_image_on_screen(template_image_path):
     scaling_factor_width = resWidth / monitor_width_originalScreenshot
     scaling_factor_height = resHeight / monitor_heigth_originalScreenshot
 
-    print("DEBUG: ",resWidth,resHeight,monitor_width_originalScreenshot,monitor_heigth_originalScreenshot)
+    # print("DEBUG: ",resWidth,resHeight,monitor_width_originalScreenshot,monitor_heigth_originalScreenshot)
 
     template_resized = cv2.resize(template, None, fx=scaling_factor_width, fy=scaling_factor_height)
 
