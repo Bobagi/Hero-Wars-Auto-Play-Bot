@@ -25,6 +25,10 @@ resHeight = 0
 
 threshold = 0.8
 
+def setShowImgs(value: bool):
+    global showImgs
+    showImgs = value
+    
 # The resolution used to take the screenshots for the module
 def setResolutionScreenshots(width: int, heigth: int):
     global monitor_width_originalScreenshot, monitor_heigth_originalScreenshot

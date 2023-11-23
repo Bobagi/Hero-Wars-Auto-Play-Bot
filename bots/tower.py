@@ -50,6 +50,7 @@ def choose_power_up(power_ups_types):
 
 def enterTower():
     global max_attempts, images
+    
     if find_image(max_attempts, images['tower']):
         print("Entering the tower...")
     else:
@@ -76,8 +77,8 @@ def main():
     towerComplete = False
 
     global images
-    images = find_image_paths()
-    powerUpsImages = find_image_paths()
+    images = find_image_paths('Tower')
+    powerUpsImages = find_image_paths('Tower/powerUps')
     setResolutionScreenshots(1360, 768)
 
     defaultWait = 1

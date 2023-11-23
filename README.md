@@ -53,7 +53,7 @@ Navigate to Your Script's Directory:
 Open the command prompt and navigate to the directory containing your Python script (`launcher.py`).
 
 Create the Executable:
-Run the following command to create the executable:
+Run the following command into `launcher.py` folder to create the executable:
 
 ```sh
 pyinstaller --onefile --add-data "icon.ico;." --add-data "../images;images" launcher.py
