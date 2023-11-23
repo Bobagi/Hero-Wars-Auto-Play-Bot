@@ -56,6 +56,7 @@ def find_image_on_screen(template_image_path):
     screen = capture_screen()
     template = cv2.imread(template_image_path)
 
+    global showImgs
     if showImgs:
         cv2.imshow('Screen', screen)
         cv2.imshow('Template', template)
@@ -67,13 +68,21 @@ def find_image_on_screen(template_image_path):
         return None
 
     global resWidth, resHeight
+    global monitor_width_originalScreenshot, monitor_heigth_originalScreenshot
     # Calculate scaling factor based on the monitor resolution
     scaling_factor_width = resWidth / monitor_width_originalScreenshot
     scaling_factor_height = resHeight / monitor_heigth_originalScreenshot
 
+    print("DEBUG: ",resWidth,resHeight,monitor_width_originalScreenshot,monitor_heigth_originalScreenshot)
+
     template_resized = cv2.resize(template, None, fx=scaling_factor_width, fy=scaling_factor_height)
 
     res = cv2.matchTemplate(screen, template_resized, cv2.TM_CCOEFF_NORMED)
+
+    if showImgs:
+        cv2.imshow('Template_resized', template_resized)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     global threshold
     loc = np.where(res >= threshold)
@@ -91,6 +100,7 @@ def find_image_monitor_resolution(template_image_path):
     screen = capture_screen()
     template = cv2.imread(template_image_path)
 
+    global showImgs
     if showImgs:
         cv2.imshow('Screen', screen)
         cv2.imshow('Template', template)
@@ -121,8 +131,6 @@ def find_image_monitor_resolution(template_image_path):
             monitor_info["Monitor"][2] - monitor_info["Monitor"][0],
             monitor_info["Monitor"][3] - monitor_info["Monitor"][1],
         )
-        
-        print("resolution: ",screen_width, "x", screen_height)
 
         return screen_width, screen_height  # Return monitor resolution
     return None
@@ -132,6 +140,7 @@ def get_image_location_on_screen(template_image_path):
     screen = capture_screen()
     template = cv2.imread(template_image_path)
 
+    global showImgs
     if showImgs:
         cv2.imshow('Screen', screen)
         cv2.imshow('Template', template)
@@ -170,6 +179,7 @@ def find_all_images_on_screen(template_image_path):
     screen = capture_screen()
     template = cv2.imread(template_image_path)
 
+    global showImgs
     if showImgs:
         cv2.imshow('Screen', screen)
         cv2.imshow('Template', template)

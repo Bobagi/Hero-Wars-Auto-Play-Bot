@@ -1,7 +1,7 @@
 from imageFind import *
 from general import *
 
-max_attempts = 3
+max_attempts: int = 3
 images = {}
 oracleCards: int = 0
 
@@ -60,7 +60,7 @@ def main():
             print("Using original resolution, threshold set to 80%")
             setThreshold(0.8)
         else:
-            print("Not using 1920x1080 resolution, threshold set to 55%")
+            print("Not using 1920x1080 resolution, threshold set to 50%")
             setThreshold(0.55)
 
     if not enterDungeon():
@@ -70,12 +70,13 @@ def main():
         print(f"Awaiting {1} seconds for next command...")
         time.sleep(1)
 
+        setShowImgs(False)
         if not alreadyGotTheOracle and find_image(max_attempts, images['oracle']):
             while True:
                 if not find_image(max_attempts, images['oracleButton']):
                     if not find_image(max_attempts, images['exitButton']):
                         closeApp("Failed close Oracle window")
-                    break  
+                    break
 
             if find_image(max_attempts, images['battleDoor']):
                 if find_image_noClick(max_attempts, images['oracleCardIcon']):
