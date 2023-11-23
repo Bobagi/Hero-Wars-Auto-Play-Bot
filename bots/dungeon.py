@@ -9,8 +9,12 @@ def enterDungeon():
     global max_attempts, images
     if find_image(max_attempts, images['guild']):
         print("Entering the Guild isle...")
-        time.sleep(2)
+        time.sleep(1)
 
+        while True:
+            if find_image_noClick(max_attempts, images['city']):
+                break
+        
         if find_image_noClick(max_attempts, images['city']) and find_image(max_attempts, images['dungeonEntry1']):
             print("Entering the Titan's hall...")
             if find_image(max_attempts, images['dungeonEntry2']):
@@ -117,7 +121,7 @@ def main():
         if kindOfDoorFound > 0:
             if kindOfDoorFound == 1:
                 attempts = 0
-                locations={}
+                locations = {}
                 i = 0
                 while attempts < max_attempts:
                     locatedImages = find_all_images_on_screen(images['swords'])
@@ -159,8 +163,6 @@ def main():
                     else:
                         attempts += 1
                         print(f"No relevant image found for titan's power level. Retrying...")
-                
-
 
             if find_image(max_attempts, images['fightForYourOwn']):
                 time.sleep(2)

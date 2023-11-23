@@ -25,10 +25,10 @@ def choose_power_up(power_ups_types):
                 for location in locatedImages:
                     newYpos = location[1] + location[3] # Repositioning the pivot below the founded image
                     newWidth = location[2] + correctionWidth
-                    description = read_text_from_region(location[0] - (correctionWidth // 2), newYpos, newWidth, location[3])
-                    if "Comprou" in description:
-                        print(f"Upgrade {power_up} already bought.")
-                        continue
+                    # description = read_text_from_region(location[0] - (correctionWidth // 2), newYpos, newWidth, location[3])
+                    # if "Comprou" in description:
+                    #     print(f"Upgrade {power_up} already bought.")
+                    #     continue
 
                     print(f"Upgrade {power_up} powerUp chosen.")
                     click_location(location[0], location[1], location[2], location[3])
