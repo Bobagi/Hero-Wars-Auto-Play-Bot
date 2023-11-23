@@ -111,7 +111,7 @@ def find_image_monitor_resolution(template_image_path):
 
         # Get monitor information for the specified point
         monitor_info = win32api.GetMonitorInfo(win32api.MonitorFromPoint((x, y)))
-
+       
         # Get the screen resolution where the template was found
         screen_width, screen_height = (
             monitor_info["Monitor"][2] - monitor_info["Monitor"][0],
@@ -237,7 +237,7 @@ def read_text_from_region(x, y, width, height, onlyNumbers = False):
         text = pytesseract.image_to_string(roi_gray, config='--psm 6')
     else:
         text = pytesseract.image_to_string(roi_gray)
-        
+
     return text.strip()
 
 def find_image_noClick(max_attempts, image, name = '', wait = 0):

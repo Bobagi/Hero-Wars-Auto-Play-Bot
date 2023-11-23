@@ -17,8 +17,20 @@ def drawHeader():
   reset_color = "\033[0m"
   print(reset_color)  # Resetting color to default
 
-def closeApp(msg):
+def closeApp(msg, color = 0):
+    green_color = "\033[92m"
+    red_color = "\033[91m"
+    reset_color = "\033[0m"
+
+    if color == 1:
+      print(green_color)
+    elif color == 2:
+      print(reset_color)
+    else:
+      print(red_color)
+    
     print(msg, "... ending application")
+    print(reset_color)
     
     if getattr(sys, 'frozen', False):
         input()

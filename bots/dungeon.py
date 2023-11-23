@@ -102,5 +102,8 @@ def main():
             else:
                 closeApp("Failed to read amount of Oracle cards")
 
+    
+
+        
 if __name__ == "__main__":
     main()

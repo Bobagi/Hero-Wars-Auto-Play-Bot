@@ -107,7 +107,7 @@ def main():
                         if find_image(max_attempts, images['collectAll']):
                             if find_image(max_attempts, images['exitFinal']):
                                 find_image(max_attempts, images['exitFinal'])
-                                closeApp("Tower Completed!")
+                                closeApp("Tower Completed!", 1)
                             else:
                                 continue
                         else:
