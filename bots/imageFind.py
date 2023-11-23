@@ -23,7 +23,7 @@ takePowerUp = False
 resWidth = 0 
 resHeight = 0
 
-threshold = 0
+threshold = 0.8
 
 # The resolution used to take the screenshots for the module
 def setResolutionScreenshots(width: int, heigth: int):
