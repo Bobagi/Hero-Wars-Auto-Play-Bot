@@ -249,6 +249,7 @@ def read_text_from_region(x, y, width, height, onlyNumbers = False):
     
     if onlyNumbers:
         text = pytesseract.image_to_string(roi_gray, config='--psm 6')
+        text = text.replace('/', '7').replace('u', '0')
     else:
         text = pytesseract.image_to_string(roi_gray)
 

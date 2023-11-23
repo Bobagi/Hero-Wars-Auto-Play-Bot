@@ -74,7 +74,7 @@ def main():
         if not alreadyGotTheOracle and find_image(max_attempts, images['oracle']):
             while True:
                 if not find_image(max_attempts, images['oracleButton']):
-                    if not find_image(max_attempts, images['exitButton']):
+                    if not find_image(max_attempts, images['exitButton']) and not find_image(max_attempts, images['exitButton2']):
                         closeApp("Failed close Oracle window")
                     break
 
@@ -92,7 +92,7 @@ def main():
                             oracleCards = int(description)
                             alreadyGotTheOracle = True
 
-                            if not find_image(max_attempts, images['exitButton']):
+                            if not find_image(max_attempts, images['exitButton']) and not find_image(max_attempts, images['exitButton2']):
                                 closeApp("Failed returning to Dungeon")
                         else:
                             closeApp("Failed reading Oracle Cards")
@@ -103,8 +103,81 @@ def main():
             else:
                 closeApp("Failed to read amount of Oracle cards")
 
-    
+        if not alreadyGotTheOracle:
+            continue
 
+        kindOfDoorFound = 0
+        if find_image(max_attempts, images['titanBattleDoor']):
+            kindOfDoorFound = 1
+        elif find_image(max_attempts, images['heroBattleDoor']):
+            kindOfDoorFound = 2
+        elif find_image(max_attempts, images['battleDoor']):
+            kindOfDoorFound = 3
+
+        if kindOfDoorFound > 0:
+            if kindOfDoorFound == 1:
+                attempts = 0
+                locations={}
+                i = 0
+                while attempts < max_attempts:
+                    locatedImages = find_all_images_on_screen(images['swords'])
+                    if len(locatedImages) > 0:
+                        print("locatedImages: ", locatedImages)
+                        for location in locatedImages:
+                            # (x, y, template_width, template_height)
+                            newXpos = location[0] + location[2] # Repositioning the pivot below the founded image
+                            newWidth = 3 * location[2]
+                            powerValue = read_text_from_region(newXpos, location[1] + (location[3] // 4), newWidth, location[3] // 2, True)
+                            if powerValue:
+                                print(f"The team have {powerValue} of power level!")
+                                locations[i] = [int(powerValue), location]
+                                i+=1
+                            else:
+                                closeApp("Failed reading titan's power level")
+                        break
+                    else:
+                        attempts += 1
+                        print(f"No relevant image found for titan's power level. Retrying...")
+                
+                min_entry = min(locations.items(), key=lambda x: x[1][0])
+                key_with_lowest_power = min_entry[0]
+                value_with_lowest_power = min_entry[1]
+
+                attempts = 0
+                i = 0
+                while attempts < max_attempts:
+                    locatedImages = find_all_images_on_screen(images['attack'])
+                    if len(locatedImages) > 0:
+                        print("locatedImages: ", locatedImages)
+                        for location in locatedImages:
+                            if i == key_with_lowest_power:
+                                click_location(location[0],location[1],location[2],location[3])
+                            else:
+                                i+=1
+                                continue
+                        break
+                    else:
+                        attempts += 1
+                        print(f"No relevant image found for titan's power level. Retrying...")
+                
+
+
+            if find_image(max_attempts, images['fightForYourOwn']):
+                time.sleep(2)
+                if find_image(max_attempts, images['toTheBattle']):
+                    while True:
+                        if find_image(max_attempts, images['auto']):
+                            break
+                    
+                    while True:
+                        if find_image(max_attempts, images['ok']):
+                            break          
+                else:
+                    closeApp("Can't go to battle")
+            else:
+                closeApp("Can't fight for your own ;-;")
+        else:
+            closeApp("Can't find a battle door")
         
 if __name__ == "__main__":
     main()
