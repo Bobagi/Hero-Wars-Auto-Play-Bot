@@ -77,9 +77,9 @@ def find_image_on_screen(template_image_path):
 
     template_resized = cv2.resize(template, None, fx=scaling_factor_width, fy=scaling_factor_height)
 
-    cv2.imshow('Template', template)
-    cv2.imshow('Template_resized', template_resized)
-    cv2.waitKey(0)
+    # cv2.imshow('Template', template)
+    # cv2.imshow('Template_resized', template_resized)
+    # cv2.waitKey(0)
 
     res = cv2.matchTemplate(screen, template_resized, cv2.TM_CCOEFF_NORMED)
 
