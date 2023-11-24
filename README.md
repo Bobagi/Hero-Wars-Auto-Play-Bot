@@ -59,6 +59,13 @@ Run the following command into `launcher.py` folder to create the executable:
 pyinstaller --onefile --add-data "icon.ico;." --add-data "../images;images" launcher.py
 ```
 
+---
+Buy me a coffee
+
+[![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate?hosted_button_id=23PAVC8AMJGYW){:target="_blank"}
+
+
+
 This command will create a dist folder in your script's directory, containing the executable file (`launcher.exe`).
 
 Find the Executable:
