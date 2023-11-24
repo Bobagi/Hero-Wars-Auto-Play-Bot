@@ -93,7 +93,6 @@ Navigate to the dist folder, and you'll find your executable (`bot.exe`).
 ![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)
 [![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate?hosted_button_id=23PAVC8AMJGYW)
 
----
 ## Contact 📫:
 
 Feedback, ideas, or anything else you'd like to share: [gustavoperin067@gmail.com](mailto:gustavoperin067@gmail.com)
