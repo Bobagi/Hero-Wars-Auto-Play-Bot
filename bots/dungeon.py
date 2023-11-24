@@ -193,7 +193,10 @@ def main():
             else:
                 willFight = fightYourOwn()
 
-            while willFight:
+            if not willFight:
+                closeApp("The oracle expects a lose")
+
+            while True:
                 if find_image(max_attempts, images['toTheBattle']) or find_image(max_attempts, images['toTheTitanBattle']):
                     while True:
                         if find_image(max_attempts, images['auto']):
