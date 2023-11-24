@@ -88,7 +88,7 @@ This command will create a dist folder in your script's directory, containing th
 Find the Executable:
 Navigate to the dist folder, and you'll find your executable (`bot.exe`).
 
-## Buy me a coffee ☕❤️
+## Buy me a gem 💎❤️
 
 ![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)
 [![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate?hosted_button_id=23PAVC8AMJGYW)
