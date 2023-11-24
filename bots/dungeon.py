@@ -126,7 +126,15 @@ def main():
                 else:
                     closeApp("Failed to detect the Oracle card icon")
             else:
-                closeApp("Failed to read amount of Oracle cards")
+                if find_image(max_attempts, images['activate']):
+                    time.sleep(5)
+                    if find_image(max_attempts, images['collect']):
+                        time.sleep(5)
+                        continue
+                    else:
+                        closeApp("Failed collecting floor reward")
+                else:
+                    closeApp("Failed to read amount of Oracle cards")
 
         if not alreadyGotTheOracle:
             continue
@@ -201,15 +209,27 @@ def main():
                     while True:
                         if find_image(max_attempts, images['auto']):
                             break
-                    
+                        else:
+                            if find_image(max_attempts, images['toTheBattle']):
+                                continue
+                            if find_image(max_attempts, images['toTheTitanBattle']):
+                                continue
+                            
                     while True:
                         if find_image(max_attempts, images['ok']):
                             break      
 
-                    break    
-          
+                    break     
         else:
-            closeApp("Can't find a battle door")
+            if find_image(max_attempts, images['activate']):
+                time.sleep(5)
+                if find_image(max_attempts, images['collect']):
+                    time.sleep(5)
+                    continue
+                else:
+                    closeApp("Failed collecting floor reward")
+            else:
+                closeApp("Can't find a battle door")
         
 if __name__ == "__main__":
     main()

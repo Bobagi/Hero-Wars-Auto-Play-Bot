@@ -249,7 +249,7 @@ def read_text_from_region(x, y, width, height, onlyNumbers = False):
 
     # Convert the ROI to grayscale
     roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-    # cv2.imwrite("roi_gray_image.png", roi_gray)
+    cv2.imwrite("roi_gray_image.png", roi_gray)
     
     if onlyNumbers:
         text = pytesseract.image_to_string(roi_gray, config='--psm 6')
