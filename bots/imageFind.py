@@ -51,7 +51,7 @@ def capture_screen():
 
     return screenshot
 
-def find_image_on_screen(template_image_path):
+def find_image_on_screen(template_image_path, debug = False):
     # Find a particular image on the screen
     screen = capture_screen()
     template = cv2.imread(template_image_path)
@@ -77,10 +77,6 @@ def find_image_on_screen(template_image_path):
 
     template_resized = cv2.resize(template, None, fx=scaling_factor_width, fy=scaling_factor_height)
 
-    # cv2.imshow('Template', template)
-    # cv2.imshow('Template_resized', template_resized)
-    # cv2.waitKey(0)
-
     res = cv2.matchTemplate(screen, template_resized, cv2.TM_CCOEFF_NORMED)
 
     if showImgs:
@@ -95,6 +91,17 @@ def find_image_on_screen(template_image_path):
         # Get the width and height of the template image
         template_width, template_height = template_resized.shape[1], template_resized.shape[0]
         y, x = loc[0][0], loc[1][0]
+
+        if debug:
+            
+            cv2.imshow('Template_resized', template_resized)
+            # Draw a rectangle around the matched region
+            cv2.rectangle(screen, (x, y), (x + template_width, y + template_height), (0, 255, 0), 2)
+
+            # Show the result with the rectangle
+            cv2.imshow('Matched Result', screen)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
         return x, y, template_width, template_height  # Return coordinates of the match
     return None
@@ -283,6 +290,29 @@ def find_image(max_attempts, image, click = True, name = '', wait = 0):
 
     if attempts == max_attempts:
         print(f"Max attempts reached. Exiting.")
+        return False
+    
+def find_image_debug(max_attempts, image, click = True, name = '', wait = 0):
+    time.sleep(wait)
+    if name == '':
+        filename = os.path.basename(image) # Get the filename from the path
+        name = os.path.splitext(filename)[0] # remove extension
+    
+    attempts = 0
+    while attempts < max_attempts:
+        # Look for tower
+        location = find_image_on_screen(image, True)
+        if location:
+            print(f"DEBUG: {name} found.")
+            if click: 
+                click_location(location[0], location[1], location[2], location[3])
+            return True
+        # If none of the images are found, increment attempts and try again
+        attempts += 1
+        print(f"DEBUG: No relevant image found for {name}. Retrying...")
+
+    if attempts == max_attempts:
+        print(f"DEBUG: Max attempts reached. Exiting.")
         return False
     
 def get_monitor_resolution(max_attempts, image, wait = 0):

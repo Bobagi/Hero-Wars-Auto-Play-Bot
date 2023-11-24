@@ -178,13 +178,16 @@ def main():
                 print("Tried to click battleDoor, but not works!")
             else:
                 if find_image(max_attempts, images['skipButton']):
+                    print("Skip battle")
                     continue
                 else:
-                    if find_image(max_attempts, images['attackButton']):                        
+                    if find_image(max_attempts, images['attackButton']): 
+                        print("Fight battle")                       
                         if find_image(max_attempts, images['toBattleButton']):
                             time.sleep(2)
                             if find_image(max_attempts, images['autoButton']):
                                  if find_image(max_attempts, images['x5Button']):
+                                    time.sleep(1)
                                     if find_image_noClick(max_attempts, images['camButton']):
                                         attacking = True
                                         continue
