@@ -62,7 +62,10 @@ pyinstaller --onefile --add-data "icon.ico;." --add-data "../images;images" laun
 ---
 Buy me a coffee
 
-[![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate?hosted_button_id=23PAVC8AMJGYW){:target="_blank"}
+<a href="https://www.paypal.com/donate?hosted_button_id=23PAVC8AMJGYW" target="_blank">
+  <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" alt="Donate with PayPal">
+</a>
+
 
 
 
