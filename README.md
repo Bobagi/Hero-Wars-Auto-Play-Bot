@@ -6,7 +6,6 @@ Actually, it only works for auto-playing the tower and the titan's dungeon.
 It has been tested in resolutions of 1920x1080 and 1366x768, other resolutions have not been tested yet.  
 The tool has only been tested on Windows 10 and 11.  
 
----
 ## Prerequisites ✔️
 
 Before using this bot, ensure you have the following installed:
@@ -16,7 +15,6 @@ Before using this bot, ensure you have the following installed:
 
 The file for installation is located at tesseract folder.
 
----
 ## Getting Started 📖
 
 > :information_source: **Observation:** I am currently exploring ways to create a more user-friendly executable for easy usage. Stay tuned for updates on a simplified version that will make it even more straightforward for users to run the bot without the need for manual configurations. Your patience and feedback are highly appreciated!
@@ -58,7 +56,21 @@ To end bot, use ´CTRL + C´ and deactivate the virtual environment:
 deactivate
 ```
 
----
+## Run without building ⏯️
+
+Don't need to activate manually the environment for this case, just run the `.bat` with the desired module.  
+For example, to run for tower, execute:
+
+```sh
+.\run_tower.bat
+```
+
+For titan's dungeon:
+
+```sh
+.\run_dungeon.bat
+```
+
 ## Build application 🧑‍🏭
 
 Navigate to Your Script's Directory:
@@ -76,7 +88,6 @@ This command will create a dist folder in your script's directory, containing th
 Find the Executable:
 Navigate to the dist folder, and you'll find your executable (`bot.exe`).
 
----
 ## Buy me a coffee ☕❤️
 
 ![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)
