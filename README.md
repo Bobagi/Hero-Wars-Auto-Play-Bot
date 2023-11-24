@@ -2,6 +2,10 @@
 
 Python bot to auto-play Hero Wars Domination Era
 
+Actually, it only works for auto-playing the tower and the titan's dungeon. 
+It has been tested in resolutions of 1920x1080 and 1366x768, other resolutions have not been tested yet. 
+The tool has only been tested on Windows 10 and 11.
+
 ---
 ## Prerequisites ✔️
 
