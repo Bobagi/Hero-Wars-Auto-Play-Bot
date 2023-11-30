@@ -93,7 +93,7 @@ def find_image_on_screen(template_image_path, debug = False):
         y, x = loc[0][0], loc[1][0]
 
         if debug:
-            
+
             cv2.imshow('Template_resized', template_resized)
             # Draw a rectangle around the matched region
             cv2.rectangle(screen, (x, y), (x + template_width, y + template_height), (0, 255, 0), 2)
@@ -256,7 +256,7 @@ def read_text_from_region(x, y, width, height, onlyNumbers = False):
 
     # Convert the ROI to grayscale
     roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite("roi_gray_image.png", roi_gray)
+    # cv2.imwrite("roi_gray_image.png", roi_gray)
     
     if onlyNumbers:
         text = pytesseract.image_to_string(roi_gray, config='--psm 6')
