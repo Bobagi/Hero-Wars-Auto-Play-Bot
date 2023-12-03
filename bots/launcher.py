@@ -4,6 +4,8 @@ from PIL import Image, ImageTk  # You may need to install the Pillow library: pi
 import os
 from tower import main as mainTower
 from dungeon import main as mainDungeon
+from config import *
+from imageFind import *
 
 default_path = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 tesseract = False
@@ -34,12 +36,15 @@ class HeroWarsBot:
             self.file_path = default_path
             global tesseract
             tesseract = True
+            setTesseractPath(default_path)
         else:
             self.icon_label.config(image=self.red_cross_image)
 
         self.icon_label.pack()  # Make the icon visible using pack
 
     def create_widgets(self):
+        images = find_image_paths('launcher')
+       
         # Create labels, buttons, and other UI elements
         self.label = tk.Label(self.root, text="Hero Wars", font=("Helvetica", 16, "bold italic"), bg='black', fg='yellow')
         self.label.pack(pady=10)
@@ -64,8 +69,8 @@ class HeroWarsBot:
         self.search_button.pack(side=tk.LEFT, padx=10)
 
         # Placeholder images for green check and red cross icons
-        self.green_check_image = tk.PhotoImage(file="images/launcher/check.png")
-        self.red_cross_image = tk.PhotoImage(file="images/launcher/xcross.png")
+        self.green_check_image = tk.PhotoImage(file=images["check"])
+        self.red_cross_image = tk.PhotoImage(file=images["xcross"])
 
         # Create an icon label (initially invisible)
         self.icon_label = tk.Label(frame_tesseract, image=None, bg='black')
@@ -111,8 +116,13 @@ class HeroWarsBot:
 
             # Store the file path for later use
             self.file_path = file_path
+            setTesseractPath(file_path)
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = HeroWarsBot(root)
-    root.mainloop()
+    try:
+        root = tk.Tk()
+        app = HeroWarsBot(root)
+        root.mainloop()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        input("Press Enter to exit...")

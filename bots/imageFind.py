@@ -5,10 +5,10 @@ import os
 import time
 import sys
 from desktopmagic.screengrab_win32 import getScreenAsImage
-import pytesseract
+from config import *
+from general import *
 import win32api # To detect the monitor resolution for multi-scaling
-
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+import imutils
 
 save_path = '../images/screenshots'
 
@@ -24,6 +24,8 @@ resWidth = 0
 resHeight = 0
 
 threshold = 0.8
+
+max_attempts = 1
 
 def setShowImgs(value: bool):
     global showImgs
@@ -66,124 +68,40 @@ def find_image_on_screen(template_image_path, debug = False):
     if template is None:
         print("Error: Unable to read the template image.")
         return None
+    
+    # new multi-scale method
+    for scale in np.linspace(0.5,1.0,20)[::-1]:
+        print("resizing: ", scale)
+        resized = imutils.resize(template, width = int(template.shape[1] * scale))
+        # w, h, _ = resized.shape[::-1]
 
-    global resWidth, resHeight
-    global monitor_width_originalScreenshot, monitor_heigth_originalScreenshot
-    # Calculate scaling factor based on the monitor resolution
-    scaling_factor_width = resWidth / monitor_width_originalScreenshot
-    scaling_factor_height = resHeight / monitor_heigth_originalScreenshot
+        res = cv2.matchTemplate(screen, resized, cv2.TM_CCOEFF_NORMED)
 
-    # print("DEBUG: ",resWidth,resHeight,monitor_width_originalScreenshot,monitor_heigth_originalScreenshot)
-
-    template_resized = cv2.resize(template, None, fx=scaling_factor_width, fy=scaling_factor_height)
-
-    res = cv2.matchTemplate(screen, template_resized, cv2.TM_CCOEFF_NORMED)
-
-    if showImgs:
-        cv2.imshow('Template_resized', template_resized)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-    global threshold
-    loc = np.where(res >= threshold)
-
-    if loc[0].size > 0:
-        # Get the width and height of the template image
-        template_width, template_height = template_resized.shape[1], template_resized.shape[0]
-        y, x = loc[0][0], loc[1][0]
-
-        if debug:
-
-            cv2.imshow('Template_resized', template_resized)
-            # Draw a rectangle around the matched region
-            cv2.rectangle(screen, (x, y), (x + template_width, y + template_height), (0, 255, 0), 2)
-
-            # Show the result with the rectangle
-            cv2.imshow('Matched Result', screen)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-
-        return x, y, template_width, template_height  # Return coordinates of the match
-    return None
-
-def find_image_monitor_resolution(template_image_path):
-    # Find a particular image on the screen
-    screen = capture_screen()
-    template = cv2.imread(template_image_path)
-
-    global showImgs
-    if showImgs:
-        cv2.imshow('Screen', screen)
-        cv2.imshow('Template', template)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-    if template is None:
-        print("Error: Unable to read the template image.")
-        return None
-
-    res = cv2.matchTemplate(screen, template, cv2.TM_CCOEFF_NORMED)
-
-    global threshold
-    loc = np.where(res >= threshold)
-    if loc[0].size > 0:
-        # Get the width and height of the template image
-        template_width, template_height = template.shape[1], template.shape[0]
-        y, x = loc[0][0], loc[1][0]
-
-        # Ensure that coordinates are integers
-        x, y, template_width, template_height = map(int, (x, y, template_width, template_height))
-
-        # Get monitor information for the specified point
-        monitor_info = win32api.GetMonitorInfo(win32api.MonitorFromPoint((x, y)))
-       
-        # Get the screen resolution where the template was found
-        screen_width, screen_height = (
-            monitor_info["Monitor"][2] - monitor_info["Monitor"][0],
-            monitor_info["Monitor"][3] - monitor_info["Monitor"][1],
-        )
-
-        return screen_width, screen_height  # Return monitor resolution
-    return None
-
-def get_image_location_on_screen(template_image_path):
-    # Find all occurrences of a particular image on the screen
-    screen = capture_screen()
-    template = cv2.imread(template_image_path)
-
-    global showImgs
-    if showImgs:
-        cv2.imshow('Screen', screen)
-        cv2.imshow('Template', template)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-    if template is None:
-        print("Error: Unable to read the template image.")
-        return None
-
-    global threshold
-    while True:
-        global resWidth, resHeight
-        # Calculate scaling factor based on the monitor resolution
-        scaling_factor_width = resWidth / monitor_width_originalScreenshot
-        scaling_factor_height = resHeight / monitor_heigth_originalScreenshot
-
-        template_resized = cv2.resize(template, None, fx=scaling_factor_width, fy=scaling_factor_height)
-        
-        res = cv2.matchTemplate(screen, template_resized, cv2.TM_CCOEFF_NORMED)
-
+        global threshold
         loc = np.where(res >= threshold)
-        if loc[0].size > 0:
-            # Get the coordinates of the match
-            y, x = loc[0][0], loc[1][0]
+        found = False
+        if loc:
+            for pt in zip(*loc[::-1]):
+                found = True
+                print("Found")
+                # time.sleep(3)
+                # cv2.rectangle(screen, pt, (pt[0] + w, pt[1] + h), (255,0,0), 2)
 
-            # Get the width and height of the template image
-            template_width, template_height = template.shape[1], template.shape[0]
+                # cv2.imshow("resize", screen)
+                # cv2.waitKey(0)
+                # cv2.destroyAllWindows()
 
-            return (x, y, template_width, template_height)
-        else:
-            break
+                template_width, template_height = template.shape[1], template.shape[0]
+                y, x = loc[0][0], loc[1][0]
+            
+                return x, y, template_width, template_height
+            
+            # if not found:
+            #     cv2.imshow("resize", resized)
+            #     cv2.waitKey(0)
+            #     cv2.destroyAllWindows()
+
+        continue
 
 def find_all_images_on_screen(template_image_path):
     # Find all occurrences of a particular image on the screen
@@ -204,47 +122,95 @@ def find_all_images_on_screen(template_image_path):
     matches = []
 
     global threshold
-    while True:
-        global resWidth, resHeight
-        # Calculate scaling factor based on the monitor resolution
-        scaling_factor_width = resWidth / monitor_width_originalScreenshot
-        scaling_factor_height = resHeight / monitor_heigth_originalScreenshot
 
-        template_resized = cv2.resize(template, None, fx=scaling_factor_width, fy=scaling_factor_height)
+    continueSearch = True
+    while continueSearch:
+        continueSearch = False
+        for scale in np.linspace(0.5,1.0,20)[::-1]:
+            print("resizing: ", scale)
+            resized = imutils.resize(template, width = int(template.shape[1] * scale))
+
+            res = cv2.matchTemplate(screen, resized, cv2.TM_CCOEFF_NORMED)
+
+            global threshold
+            loc = np.where(res >= threshold)
+
+            if loc[0].size > 0:
+                # Get the coordinates of the match
+                y, x = loc[0][0], loc[1][0]
+
+                # Get the width and height of the template image
+                template_width, template_height = template.shape[1], template.shape[0]
+
+                matches.append((x, y, template_width, template_height))
+
+                # Update the region around the found match to ignore it in the next iteration
+                screen[y:y + template_height, x:x + template_width] = 0
+
+                continueSearch = True
+                break
+            else:
+                continue
+
+
+        # global resWidth, resHeight
+        # # Calculate scaling factor based on the monitor resolution
+        # scaling_factor_width = resWidth / monitor_width_originalScreenshot
+        # scaling_factor_height = resHeight / monitor_heigth_originalScreenshot
+
+        # template_resized = cv2.resize(template, None, fx=scaling_factor_width, fy=scaling_factor_height)
         
-        res = cv2.matchTemplate(screen, template_resized, cv2.TM_CCOEFF_NORMED)
+        # res = cv2.matchTemplate(screen, template_resized, cv2.TM_CCOEFF_NORMED)
 
-        loc = np.where(res >= threshold)
-        if loc[0].size > 0:
-            # Get the coordinates of the match
-            y, x = loc[0][0], loc[1][0]
+        # loc = np.where(res >= threshold)
+        # if loc[0].size > 0:
+        #     # Get the coordinates of the match
+        #     y, x = loc[0][0], loc[1][0]
 
-            # Get the width and height of the template image
-            template_width, template_height = template.shape[1], template.shape[0]
+        #     # Get the width and height of the template image
+        #     template_width, template_height = template.shape[1], template.shape[0]
 
-            matches.append((x, y, template_width, template_height))
+        #     matches.append((x, y, template_width, template_height))
 
-            # Update the region around the found match to ignore it in the next iteration
-            screen[y:y + template_height, x:x + template_width] = 0
-        else:
-            break
+        #     # Update the region around the found match to ignore it in the next iteration
+        #     screen[y:y + template_height, x:x + template_width] = 0
+        # else:
+        #     break
 
     return matches
 
-def click_location(x, y, template_width, template_height):
-    # Calculate the center coordinates of the template
-    center_x = x + template_width // 2
-    center_y = y + template_height // 2
+def find_image_noClick(image, name = '', wait = 0):
+    return find_image(image, False, name, wait)
 
-    # Save mouse position
-    (x, y) = pyautogui.position()
+def find_image(image, click = True, name = '', wait = 0):
+    global max_attempts
+    
+    if name == '':
+        filename = os.path.basename(image) # Get the filename from the path
+        name = os.path.splitext(filename)[0] # remove extension
+    
+    setPrintColor(3)
+    print(" ")
+    print(f"Looking for {name}.")
+    resetPrintColor()
+    time.sleep(wait)
 
-    # Click at the provided x, y coordinates
-    pyautogui.click(center_x, center_y, _pause=False)
+    attempts = 0
+    while attempts < max_attempts:
+        # Look for tower
+        location = find_image_on_screen(image)
+        if location:
+            print(f"{name} found.")
+            if click: 
+                click_location(location[0], location[1], location[2], location[3])
+            return True
+        # If none of the images are found, increment attempts and try again
+        attempts += 1
+        print(f"No relevant image found for {name}. Retrying...")
 
-    # Move back to where the mouse was before click
-    pyautogui.moveTo(x, y)
-    pyautogui.moveTo(x, y) # Double check
+    if attempts == max_attempts:
+        print(f"Max attempts reached. Exiting.")
+        return False
 
 def read_text_from_region(x, y, width, height, onlyNumbers = False):
     # Capture the region around the clicked button
@@ -266,86 +232,31 @@ def read_text_from_region(x, y, width, height, onlyNumbers = False):
 
     return text.strip()
 
-def find_image_noClick(max_attempts, image, name = '', wait = 0):
-    return find_image(max_attempts, image, False, name, wait)
+def click_location(x, y, template_width, template_height):
+    # Calculate the center coordinates of the template
+    center_x = x + template_width // 2
+    center_y = y + template_height // 2
 
-def find_image(max_attempts, image, click = True, name = '', wait = 0):
-    time.sleep(wait)
-    if name == '':
-        filename = os.path.basename(image) # Get the filename from the path
-        name = os.path.splitext(filename)[0] # remove extension
-    
-    attempts = 0
-    while attempts < max_attempts:
-        # Look for tower
-        location = find_image_on_screen(image)
-        if location:
-            print(f"{name} found.")
-            if click: 
-                click_location(location[0], location[1], location[2], location[3])
-            return True
-        # If none of the images are found, increment attempts and try again
-        attempts += 1
-        print(f"No relevant image found for {name}. Retrying...")
+    # Save mouse position
+    (x, y) = pyautogui.position()
 
-    if attempts == max_attempts:
-        print(f"Max attempts reached. Exiting.")
-        return False
-    
-def find_image_debug(max_attempts, image, click = True, name = '', wait = 0):
-    time.sleep(wait)
-    if name == '':
-        filename = os.path.basename(image) # Get the filename from the path
-        name = os.path.splitext(filename)[0] # remove extension
-    
-    attempts = 0
-    while attempts < max_attempts:
-        # Look for tower
-        location = find_image_on_screen(image, True)
-        if location:
-            print(f"DEBUG: {name} found.")
-            if click: 
-                click_location(location[0], location[1], location[2], location[3])
-            return True
-        # If none of the images are found, increment attempts and try again
-        attempts += 1
-        print(f"DEBUG: No relevant image found for {name}. Retrying...")
+    # Click at the provided x, y coordinates
+    pyautogui.click(center_x, center_y, _pause=False)
 
-    if attempts == max_attempts:
-        print(f"DEBUG: Max attempts reached. Exiting.")
-        return False
-    
-def get_monitor_resolution(max_attempts, image, wait = 0):
-    time.sleep(wait)
-    
-    filename = os.path.basename(image) # Get the filename from the path
-    name = os.path.splitext(filename)[0] # remove extension
-    
-    attempts = 0
-    while attempts < max_attempts:
-        # Look for tower
-        resolution = find_image_monitor_resolution(image)
-        
-        if resolution is not None:
-            global resWidth, resHeight
-            resWidth, resHeight = resolution
-            print(f"{name} found.", "Monitor resolution: ",resWidth,"x",resHeight)
-            return resWidth, resHeight
-        # If none of the images are found, increment attempts and try again
-        attempts += 1
-        print(f"No relevant image found for {name}. Retrying...")
-
-    if attempts == max_attempts:
-        print(f"Max attempts reached. Exiting.")
-        return None, None
+    # Move back to where the mouse was before click
+    pyautogui.moveTo(x, y)
+    pyautogui.moveTo(x, y) # Double check
 
 def find_image_paths(folder_path = ''):
     if getattr(sys, 'frozen', False):
         # Running in PyInstaller one-file mode
         base_path = sys._MEIPASS
     else:
-        # Running in a normal Python environment
-        base_path = 'images/HeroWars' if folder_path == '' else 'images/HeroWars/' + folder_path
+        if folder_path == "launcher":
+            base_path = "images/launcher"
+        else:
+            # Running in a normal Python environment
+            base_path = 'images/HeroWars' if folder_path == '' else 'images/HeroWars/' + folder_path
 
     images = {}
     for root, dirs, files in os.walk(base_path):

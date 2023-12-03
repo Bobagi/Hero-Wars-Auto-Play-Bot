@@ -1,10 +1,8 @@
 import sys
 
 def drawHeader():
-  # ANSI escape code for yellow text color
-  yellow_color = "\033[93m"
+  setPrintColor(4)
 
-  print(yellow_color)
   print(" ___       _              _ ")
   print("| . > ___ | |_  ___  ___ <_>")
   print("| . \/ . \| . \<_> |/ . || |")
@@ -13,26 +11,39 @@ def drawHeader():
   print("                    Presents")
   print("\nHeroWars Time Saver")
 
-   # ANSI escape code for resetting text color
-  reset_color = "\033[0m"
-  print(reset_color)  # Resetting color to default
+  resetPrintColor()
 
 def closeApp(msg, color = 0):
-    green_color = "\033[92m"
-    red_color = "\033[91m"
-    reset_color = "\033[0m"
-
     if color == 1:
-      print(green_color)
+      setPrintColor(1)
     elif color == 2:
-      print(reset_color)
+      resetPrintColor()
     else:
-      print(red_color)
+      setPrintColor(2)
     
     print(msg, "... ending application")
-    print(reset_color)
+    resetPrintColor()
     
     if getattr(sys, 'frozen', False):
-        input()
+      input()
     
     sys.exit()
+
+def setPrintColor(value):
+  color = ""
+  if value == 1:
+    color = "\033[92m" #green
+  elif value == 2:
+    color = "\033[91m" #red
+  elif value == 3:
+    color = "\033[96m" #cyan
+  elif value == 4:
+    color = "\033[93m" #yellow
+  else:
+    color = "\033[0m" #white
+
+  print(color)
+   
+def resetPrintColor():
+  reset_color = "\033[0m"
+  print(reset_color)
